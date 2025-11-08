@@ -74,112 +74,6 @@ const platforms = [
     <ViewTransitions />
   </head>
   <body>
-    <!-- Navigation Header -->
-    <header class="sticky top-0 z-50 bg-dark-surface/80 backdrop-blur-md border-b border-dark-card-hover">
-      <nav class="container mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
-          <!-- Logo -->
-          <a href="/" class="flex items-center gap-2 group flex-shrink-0" data-astro-prefetch>
-            <h1 class="text-2xl font-heading font-bold gradient-text group-hover:scale-105 transition-transform duration-200">
-              DropTimer<span class="text-neon-cyan">.gg</span>
-            </h1>
-          </a>
-
-          <!-- Desktop Navigation - Platforms in Center -->
-          <div class="hidden lg:flex items-center gap-3 flex-1 justify-center">
-            {platforms.map((platform) => {
-              return (
-                <button
-                  class="platform-filter-btn-header relative px-4 py-2 rounded-lg text-white font-medium text-sm transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 border-transparent"
-                  data-platform={platform.name}
-                  data-platform-color={platform.color}
-                  title={`Filter by ${platform.name}`}
-                  style={`background: linear-gradient(135deg, var(--${platform.name.toLowerCase()}-from), var(--${platform.name.toLowerCase()}-to));`}
-                >
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold">{platform.icon}</span>
-                    <span class="hidden xl:inline">{platform.name}</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          <!-- Desktop Favorites - Right -->
-          <div class="hidden lg:flex items-center flex-shrink-0">
-            <button
-              id="favorites-nav-link"
-              class="hidden flex items-center gap-2 px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 font-medium"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-              <span id="favorites-count">0</span>
-            </button>
-          </div>
-
-          <!-- Mobile Menu Button -->
-          <button
-            id="mobile-menu-btn"
-            class="lg:hidden p-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200"
-            aria-label="Toggle menu"
-          >
-            <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden lg:hidden mt-4 pb-4 border-t border-dark-card-hover">
-          <div class="flex flex-col gap-3 pt-4">
-            <!-- Mobile Platform Filters -->
-            <div class="flex flex-wrap gap-2 justify-center">
-              {platforms.map((platform) => {
-                return (
-                  <button
-                    class="platform-filter-btn-header relative px-4 py-2 rounded-lg text-white font-medium text-sm transition-all duration-200 hover:scale-105 border-2 border-transparent"
-                    data-platform={platform.name}
-                    data-platform-color={platform.color}
-                    style={`background: linear-gradient(135deg, var(--${platform.name.toLowerCase()}-from), var(--${platform.name.toLowerCase()}-to));`}
-                  >
-                    <div class="flex items-center gap-2">
-                      <span class="font-bold">{platform.icon}</span>
-                      <span>{platform.name}</span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            <!-- Mobile Favorites Link -->
-            <button
-              id="favorites-nav-link-mobile"
-              class="hidden flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 font-medium"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-              Favorites (<span id="favorites-count-mobile">0</span>)
-            </button>
-          </div>
-        </div>
-      </nav>
-    </header>
-
     <!-- Main Content -->
     <main class="min-h-screen">
       <slot />
@@ -193,6 +87,21 @@ const platforms = [
         </p>
       </div>
     </footer>
+    
+    <!-- Countdown timer script -->
+    <script src="/scripts/countdown.js" defer></script>
+    <script>
+      // Initialize countdown timers after page load
+      if (typeof window !== 'undefined') {
+        document.addEventListener('DOMContentLoaded', function() {
+          // Trigger timer initialization
+          setTimeout(function() {
+            const event = new Event('countdown-init');
+            window.dispatchEvent(event);
+          }, 100);
+        });
+      }
+    </script>
   </body>
 </html>
 
@@ -226,171 +135,4 @@ const platforms = [
   }
 </style>
 
-<script>
-  if (typeof window !== 'undefined') {
-    // Mobile Menu Toggle
-    function initMobileMenu() {
-      const menuBtn = document.getElementById('mobile-menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const menuIcon = document.getElementById('menu-icon');
-      const closeIcon = document.getElementById('close-icon');
-
-      if (!menuBtn || !mobileMenu || !menuIcon || !closeIcon) return;
-
-      menuBtn.addEventListener('click', () => {
-        const isHidden = mobileMenu.classList.contains('hidden');
-        
-        if (isHidden) {
-          mobileMenu.classList.remove('hidden');
-          menuIcon.classList.add('hidden');
-          closeIcon.classList.remove('hidden');
-        } else {
-          mobileMenu.classList.add('hidden');
-          menuIcon.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-        }
-      });
-
-      // Close menu when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-          mobileMenu.classList.add('hidden');
-          menuIcon.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-        }
-      });
-    }
-
-    // Favorites Counter
-    function updateFavoritesCounter() {
-      function loadFavorites() {
-        try {
-          return JSON.parse(localStorage.getItem('droptimer-favorites') || '[]');
-        } catch {
-          return [];
-        }
-      }
-
-      const favorites = loadFavorites();
-      const count = favorites.length;
-
-      // Update desktop counter
-      const desktopLink = document.getElementById('favorites-nav-link');
-      const desktopCount = document.getElementById('favorites-count');
-      if (desktopLink && desktopCount) {
-        desktopCount.textContent = count;
-        if (count > 0) {
-          desktopLink.classList.remove('hidden');
-        } else {
-          desktopLink.classList.add('hidden');
-        }
-      }
-
-      // Update mobile counter
-      const mobileLink = document.getElementById('favorites-nav-link-mobile');
-      const mobileCount = document.getElementById('favorites-count-mobile');
-      if (mobileLink && mobileCount) {
-        mobileCount.textContent = count;
-        if (count > 0) {
-          mobileLink.classList.remove('hidden');
-        } else {
-          mobileLink.classList.add('hidden');
-        }
-      }
-    }
-
-    // Favorites Link Functionality
-    function initFavoritesLinks() {
-      const desktopLink = document.getElementById('favorites-nav-link');
-      const mobileLink = document.getElementById('favorites-nav-link-mobile');
-
-      function toggleFavoritesFilter() {
-        // Navigate to home if not already there
-        if (window.location.pathname !== '/') {
-          window.location.href = '/';
-          return;
-        }
-
-        // Toggle favorites filter
-        const favoritesFilterBtn = document.getElementById('favorites-filter-btn');
-        if (favoritesFilterBtn) {
-          favoritesFilterBtn.click();
-        }
-      }
-
-      if (desktopLink) {
-        desktopLink.addEventListener('click', toggleFavoritesFilter);
-      }
-
-      if (mobileLink) {
-        mobileLink.addEventListener('click', () => {
-          toggleFavoritesFilter();
-          // Close mobile menu
-          const mobileMenu = document.getElementById('mobile-menu');
-          const menuIcon = document.getElementById('menu-icon');
-          const closeIcon = document.getElementById('close-icon');
-          if (mobileMenu && menuIcon && closeIcon) {
-            mobileMenu.classList.add('hidden');
-            menuIcon.classList.remove('hidden');
-            closeIcon.classList.add('hidden');
-          }
-        });
-      }
-    }
-
-    // Platform Filter Functionality (for header buttons to filter on home page)
-    function initPlatformFilters() {
-      const platformButtons = document.querySelectorAll('.platform-filter-btn-header');
-      
-      // Only work on home page
-      if (window.location.pathname !== '/') {
-        return;
-      }
-      
-      platformButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const platform = btn.getAttribute('data-platform');
-          
-          // Store in sessionStorage
-          if (platform) {
-            sessionStorage.setItem('droptimer-active-platform', platform);
-          } else {
-            sessionStorage.removeItem('droptimer-active-platform');
-          }
-          
-          // Trigger filter update on home page
-          const event = new CustomEvent('platformFilter', { detail: { platform } });
-          window.dispatchEvent(event);
-          
-          // Scroll to games section if not already visible
-          const gamesSection = document.getElementById('games-section');
-          if (gamesSection) {
-            gamesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        });
-      });
-      
-      // Highlight active platform based on sessionStorage
-      const activePlatform = sessionStorage.getItem('droptimer-active-platform');
-      if (activePlatform) {
-        platformButtons.forEach(btn => {
-          if (btn.getAttribute('data-platform') === activePlatform) {
-            btn.classList.add('active');
-            btn.style.opacity = '1';
-            btn.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-          }
-        });
-      }
-    }
-
-    // Initialize
-    initMobileMenu();
-    updateFavoritesCounter();
-    initFavoritesLinks();
-    initPlatformFilters();
-
-    // Update favorites counter on storage changes
-    window.addEventListener('storage', updateFavoritesCounter);
-    setInterval(updateFavoritesCounter, 1000);
-  }
-</script>
+<!-- No menu JavaScript needed - just logo -->

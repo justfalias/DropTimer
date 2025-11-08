@@ -1,0 +1,104 @@
+---
+import CountdownTimer from './CountdownTimer.astro';
+import type { Game } from '@/types/Game';
+
+interface Props {
+  game: Game;
+  size?: 'small' | 'medium' | 'large';
+  theme?: 'dark' | 'light' | 'neon';
+  showTitle?: boolean;
+  showPlatforms?: boolean;
+}
+
+const { 
+  game, 
+  size = 'medium', 
+  theme = 'dark',
+  showTitle = true,
+  showPlatforms = true
+} = Astro.props;
+
+// Get the earliest release date
+function getEarliestReleaseDate(game: Game): string {
+  if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length > 0) {
+    const dates = Object.values(game.platformReleaseDates).filter(Boolean) as string[];
+    if (dates.length > 0) {
+      return dates.sort()[0];
+    }
+  }
+  return game.releaseDate;
+}
+
+const releaseDate = getEarliestReleaseDate(game);
+const releaseDateFormatted = new Date(releaseDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Size classes
+const sizeClasses = {
+  small: {
+    container: 'p-4',
+    title: 'text-lg',
+    timer: false, // Use default small
+  },
+  medium: {
+    container: 'p-6',
+    title: 'text-xl',
+    timer: false, // Use default
+  },
+  large: {
+    container: 'p-8',
+    title: 'text-2xl',
+    timer: true, // Use large timer
+  },
+};
+
+// Theme classes
+const themeClasses = {
+  dark: 'bg-dark-bg text-text-primary',
+  light: 'bg-white text-gray-900',
+  neon: 'bg-dark-bg text-text-primary border-2 border-neon-cyan shadow-neon-cyan',
+};
+
+const currentSize = sizeClasses[size];
+---
+
+<div class={`embed-widget ${themeClasses[theme]} ${currentSize.container} rounded-lg`}>
+  {showTitle && (
+    <div class="mb-4 text-center">
+      <h3 class={`${currentSize.title} font-heading font-bold mb-2`}>
+        {game.name}
+      </h3>
+      {showPlatforms && game.platforms.length > 0 && (
+        <p class="text-sm text-text-secondary">
+          {game.platforms.join(', ')}
+        </p>
+      )}
+      <p class="text-sm text-text-secondary mt-1">
+        {releaseDateFormatted}
+      </p>
+    </div>
+  )}
+  
+  <div class="flex justify-center">
+    <CountdownTimer releaseDate={releaseDate} large={currentSize.timer} />
+  </div>
+  
+  <div class="mt-4 text-center text-xs text-text-secondary">
+    <a href={`/${game.slug}`} target="_blank" rel="noopener" class="hover:text-neon-cyan transition-colors">
+      View on DropTimer.gg
+    </a>
+  </div>
+</div>
+
+<style>
+  .embed-widget {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+</style>
+

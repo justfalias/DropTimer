@@ -12,11 +12,12 @@ const { game } = Astro.props;
 
 <a
   href={`/${game.slug}`}
-  class="group block card-hover"
+  class="group block card-hover game-card"
   data-astro-prefetch
   data-game-slug={game.slug}
+  data-wishlisted="false"
 >
-  <div class="relative overflow-hidden rounded-lg bg-dark-card border border-dark-card-hover">
+  <div class="relative overflow-hidden rounded-lg bg-dark-card border border-dark-card-hover transition-all duration-300">
     <!-- Game Cover Image -->
     <div class="relative h-64 overflow-hidden">
       <img
@@ -24,6 +25,7 @@ const { game } = Astro.props;
         alt={`${game.name} cover`}
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
+        onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect fill=\'%231a1a2e\' width=\'400\' height=\'300\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\' fill=\'%23666\' font-family=\'Arial\' font-size=\'18\'%3ENo Image%3C/text%3E%3C/svg%3E';"
       />
       <!-- Gradient overlay for better text readability -->
       <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>
@@ -48,6 +50,16 @@ const { game } = Astro.props;
         ))}
       </div>
 
+      <!-- Social Stats -->
+      <div class="flex items-center gap-2 text-xs text-text-secondary" data-game-stats={game.slug}>
+        <span class="flex items-center gap-1" data-wishlist-count>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          <span data-count>0</span> <span class="text-text-secondary/70">wishlisted</span>
+        </span>
+      </div>
+
       <!-- Release Date -->
       <p class="text-sm text-text-secondary">
         Release: {new Date(game.releaseDate).toLocaleDateString('en-US', {
@@ -64,4 +76,28 @@ const { game } = Astro.props;
     </div>
   </div>
 </a>
+
+<style>
+  /* Highlight wishlisted games */
+  .game-card[data-wishlisted="true"] > div {
+    border-color: rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(30, 30, 46, 1) 100%);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+  }
+  
+  .game-card[data-wishlisted="true"]:hover > div {
+    border-color: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+  }
+  
+  .game-card[data-wishlisted="true"]::before {
+    content: "⭐";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.8));
+  }
+</style>
 

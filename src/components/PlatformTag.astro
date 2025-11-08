@@ -15,11 +15,26 @@ const platformColors: Record<Platform, string> = {
   Switch: 'bg-platform-switch text-white',
   PC: 'bg-platform-pc text-white',
 };
+
+// Platform logo paths
+const platformLogos: Record<Platform, string> = {
+  PC: '/images/platforms/pc.svg',
+  PlayStation: '/images/platforms/playstation.svg',
+  Xbox: '/images/platforms/xbox.svg',
+  Switch: '/images/platforms/switch.svg',
+  Steam: '/images/platforms/steam.svg',
+};
 ---
 
 <span
-  class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${platformColors[platform]} transition-all duration-200 hover:scale-105`}
+  class={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${platformColors[platform]} transition-all duration-200 hover:scale-105`}
 >
-  {platform}
+  <img 
+    src={platformLogos[platform]} 
+    alt={platform}
+    class="w-3 h-3"
+    loading="lazy"
+  />
+  <span>{platform}</span>
 </span>
 

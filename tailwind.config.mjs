@@ -23,10 +23,10 @@ export default {
         'platform-switch': '#e60012',
         'platform-pc': '#6c757d',
       },
-      // Custom fonts
+      // Custom fonts - Modern and attractive typography
       fontFamily: {
-        'heading': ['Orbitron', 'Inter', 'sans-serif'],
-        'body': ['Inter', 'sans-serif'],
+        'heading': ['Space Grotesk', 'Poppins', 'sans-serif'],
+        'body': ['Poppins', 'sans-serif'],
         'mono': ['JetBrains Mono', 'monospace'],
       },
       // Custom animations

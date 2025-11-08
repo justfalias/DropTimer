@@ -3,6 +3,7 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
+  output: 'hybrid', // Hybrid mode: static pages + server endpoints
   integrations: [
     tailwind({
       // Enable Tailwind CSS

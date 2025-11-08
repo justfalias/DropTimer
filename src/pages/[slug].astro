@@ -50,6 +50,7 @@ const releaseDateFormatted = new Date(defaultReleaseDate).toLocaleDateString('en
 
 const siteUrl = Astro.url.origin;
 const gameUrl = `${siteUrl}/${game.slug}`;
+const shareUrl = gameUrl; // Alias for compatibility with script
 const gameImage = game.image.startsWith('http') ? game.image : `${siteUrl}${game.image}`;
 
 // SEO metadata
@@ -168,14 +169,14 @@ if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length >
 
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 animate-fade-in" style="animation-delay: 0.6s;">
-          <!-- Favorite Button -->
+          <!-- Wishlist Button -->
           <button
-            id="favorite-btn"
-            class="flex items-center gap-2 px-6 py-3 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-primary hover:text-neon-cyan group"
+            id="wishlist-btn"
+            class="flex items-center gap-2 px-6 py-3 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-primary hover:text-neon-purple group"
             data-game-slug={game.slug}
           >
             <svg
-              id="favorite-icon"
+              id="wishlist-icon"
               class="w-5 h-5 transition-all duration-200"
               fill="none"
               stroke="currentColor"
@@ -188,7 +189,8 @@ if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length >
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               />
             </svg>
-            <span id="favorite-text">Add to Favorites</span>
+            <span id="wishlist-text">Add to Wishlist</span>
+            <span id="wishlist-count" class="text-xs text-text-secondary ml-1">(<span data-count>0</span>)</span>
           </button>
 
           <!-- Share Button -->
@@ -211,6 +213,107 @@ if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length >
             </svg>
             Share
           </button>
+
+          <!-- Embed Button -->
+          <button
+            id="embed-btn"
+            class="flex items-center gap-2 px-6 py-3 bg-neon-cyan hover:bg-neon-purple text-dark-bg rounded-lg transition-all duration-200 font-semibold group"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            Embed
+          </button>
+        </div>
+
+        <!-- Embed Modal -->
+        <div id="embed-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div class="bg-dark-card border-2 border-dark-card-hover rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-heading font-bold text-text-primary">Embed Countdown Widget</h2>
+                <button
+                  id="close-embed-modal"
+                  class="text-text-secondary hover:text-neon-cyan transition-colors"
+                >
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Preview -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-text-primary mb-3">Preview</h3>
+                <div class="bg-dark-surface p-4 rounded-lg border border-dark-card-hover">
+                  <iframe
+                    id="embed-preview"
+                    src={`${gameUrl.replace('/' + game.slug, '/embed/' + game.slug)}?size=medium&theme=dark`}
+                    class="w-full border-0 rounded"
+                    style="min-height: 300px;"
+                    loading="lazy"
+                  ></iframe>
+                </div>
+              </div>
+
+              <!-- Options -->
+              <div class="mb-6 space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-text-primary mb-2">Size</label>
+                  <select id="embed-size" class="w-full px-4 py-2 bg-dark-surface border border-dark-card-hover rounded-lg text-text-primary">
+                    <option value="small">Small</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-text-primary mb-2">Theme</label>
+                  <select id="embed-theme" class="w-full px-4 py-2 bg-dark-surface border border-dark-card-hover rounded-lg text-text-primary">
+                    <option value="dark" selected>Dark</option>
+                    <option value="light">Light</option>
+                    <option value="neon">Neon</option>
+                  </select>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="embed-title" checked class="w-4 h-4 rounded border-dark-card-hover bg-dark-surface text-neon-cyan focus:ring-neon-cyan">
+                  <label for="embed-title" class="text-sm text-text-primary">Show game title</label>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="embed-platforms" checked class="w-4 h-4 rounded border-dark-card-hover bg-dark-surface text-neon-cyan focus:ring-neon-cyan">
+                  <label for="embed-platforms" class="text-sm text-text-primary">Show platforms</label>
+                </div>
+              </div>
+
+              <!-- Embed Code -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-text-primary">Embed Code</label>
+                  <button
+                    id="copy-embed-code"
+                    class="px-4 py-2 bg-neon-cyan hover:bg-neon-purple text-dark-bg rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Copy Code
+                  </button>
+                </div>
+                <textarea
+                  id="embed-code"
+                  readonly
+                  class="w-full px-4 py-3 bg-dark-surface border border-dark-card-hover rounded-lg text-text-primary font-mono text-sm resize-none"
+                  rows="4"
+                ></textarea>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Platforms -->
@@ -247,7 +350,7 @@ if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length >
   </div>
 </MainLayout>
 
-<script define:vars={{ gameSlug: game.slug, shareUrl, gameData: JSON.stringify(game) }}>
+<script define:vars={{ gameSlug: game.slug, shareUrl, gameUrl, gameData: JSON.stringify(game) }}>
   // Platform selector functionality
   function initPlatformSelector() {
     const platformButtons = document.querySelectorAll('.platform-select-btn');
@@ -302,59 +405,112 @@ if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length >
     });
   }
 
-  // Favorite functionality
-  function initFavorites() {
-    const favoriteBtn = document.getElementById('favorite-btn');
-    const favoriteIcon = document.getElementById('favorite-icon');
-    const favoriteText = document.getElementById('favorite-text');
+  // Wishlist functionality (now with Supabase)
+  async function initWishlist() {
+    const wishlistBtn = document.getElementById('wishlist-btn');
+    const wishlistIcon = document.getElementById('wishlist-icon');
+    const wishlistText = document.getElementById('wishlist-text');
+    const wishlistCountEl = document.getElementById('wishlist-count')?.querySelector('[data-count]');
     
-    if (!favoriteBtn || !favoriteIcon || !favoriteText) return;
+    if (!wishlistBtn || !wishlistIcon || !wishlistText) return;
 
-    // Load favorites from localStorage
-    function loadFavorites() {
+    // Get anonymous user ID
+    function getOrCreateAnonymousUserId() {
+      const storageKey = 'droptimer-anonymous-id';
+      let userId = localStorage.getItem(storageKey);
+      if (!userId) {
+        userId = `anon_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        localStorage.setItem(storageKey, userId);
+      }
+      return userId;
+    }
+
+    const userId = getOrCreateAnonymousUserId();
+
+    // Load wishlist status from API
+    async function loadWishlistStatus() {
       try {
-        const favorites = JSON.parse(localStorage.getItem('droptimer-favorites') || '[]');
-        return new Set(favorites);
-      } catch {
-        return new Set();
+        const response = await fetch(`/api/interactions/${gameSlug}?user_id=${userId}`);
+        if (!response.ok) return { hasWishlisted: false, count: 0 };
+        const data = await response.json();
+        return {
+          hasWishlisted: data.user_has_wishlisted || false,
+          count: data.wishlist_count || 0,
+        };
+      } catch (error) {
+        console.error('Error loading wishlist status:', error);
+        // Fallback to localStorage
+        try {
+          const wishlist = JSON.parse(localStorage.getItem('droptimer-wishlist') || '[]');
+          return {
+            hasWishlisted: wishlist.includes(gameSlug),
+            count: 0,
+          };
+        } catch {
+          return { hasWishlisted: false, count: 0 };
+        }
       }
     }
 
-    // Save favorites to localStorage
-    function saveFavorites(favorites) {
-      localStorage.setItem('droptimer-favorites', JSON.stringify(Array.from(favorites)));
-    }
-
-    // Check if game is favorited
-    const favorites = loadFavorites();
-    const isFavorited = favorites.has(gameSlug);
-    
     // Update button state
-    function updateButtonState(favorited) {
-      if (favorited) {
-        favoriteIcon.classList.add('fill-neon-cyan', 'text-neon-cyan');
-        favoriteText.textContent = 'Favorited';
+    function updateButtonState(hasWishlisted, count) {
+      if (hasWishlisted) {
+        wishlistIcon.classList.add('fill-neon-purple', 'text-neon-purple');
+        wishlistText.textContent = 'In Wishlist';
       } else {
-        favoriteIcon.classList.remove('fill-neon-cyan', 'text-neon-cyan');
-        favoriteText.textContent = 'Add to Favorites';
+        wishlistIcon.classList.remove('fill-neon-purple', 'text-neon-purple');
+        wishlistText.textContent = 'Add to Wishlist';
+      }
+      if (wishlistCountEl) {
+        wishlistCountEl.textContent = count;
       }
     }
 
-    updateButtonState(isFavorited);
+    // Load initial state
+    const { hasWishlisted, count } = await loadWishlistStatus();
+    updateButtonState(hasWishlisted, count);
 
-    // Toggle favorite on click
-    favoriteBtn.addEventListener('click', () => {
-      const currentFavorites = loadFavorites();
+    // Toggle wishlist on click
+    wishlistBtn.addEventListener('click', async () => {
+      const currentStatus = await loadWishlistStatus();
+      const newStatus = !currentStatus.hasWishlisted;
       
-      if (currentFavorites.has(gameSlug)) {
-        currentFavorites.delete(gameSlug);
-        updateButtonState(false);
-      } else {
-        currentFavorites.add(gameSlug);
-        updateButtonState(true);
+      try {
+        const method = newStatus ? 'POST' : 'DELETE';
+        const url = newStatus 
+          ? `/api/interactions/${gameSlug}`
+          : `/api/interactions/${gameSlug}?user_id=${userId}`;
+        
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: method === 'POST' ? JSON.stringify({
+            user_id: userId,
+          }) : undefined,
+        });
+
+        if (response.ok) {
+          const updatedStatus = await loadWishlistStatus();
+          updateButtonState(updatedStatus.hasWishlisted, updatedStatus.count);
+          // Also update localStorage as backup
+          const wishlist = JSON.parse(localStorage.getItem('droptimer-wishlist') || '[]');
+          if (newStatus && !wishlist.includes(gameSlug)) {
+            wishlist.push(gameSlug);
+          } else if (!newStatus) {
+            const index = wishlist.indexOf(gameSlug);
+            if (index > -1) wishlist.splice(index, 1);
+          }
+          localStorage.setItem('droptimer-wishlist', JSON.stringify(wishlist));
+          
+          // Update wishlist counter in header
+          const event = new CustomEvent('wishlist-updated');
+          window.dispatchEvent(event);
+        }
+      } catch (error) {
+        console.error('Error toggling wishlist:', error);
       }
-      
-      saveFavorites(currentFavorites);
     });
   }
 
@@ -392,10 +548,112 @@ if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length >
     });
   }
 
+  // Embed functionality
+  function initEmbed() {
+    const embedBtn = document.getElementById('embed-btn');
+    const embedModal = document.getElementById('embed-modal');
+    const closeModal = document.getElementById('close-embed-modal');
+    const embedSize = document.getElementById('embed-size');
+    const embedTheme = document.getElementById('embed-theme');
+    const embedTitle = document.getElementById('embed-title');
+    const embedPlatforms = document.getElementById('embed-platforms');
+    const embedPreview = document.getElementById('embed-preview');
+    const embedCode = document.getElementById('embed-code');
+    const copyBtn = document.getElementById('copy-embed-code');
+
+    if (!embedBtn || !embedModal) return;
+
+    // Generate embed URL
+    function generateEmbedUrl() {
+      const size = embedSize?.value || 'medium';
+      const theme = embedTheme?.value || 'dark';
+      const title = embedTitle?.checked !== false ? 'true' : 'false';
+      const platforms = embedPlatforms?.checked !== false ? 'true' : 'false';
+      
+      return `${gameUrl.replace('/' + gameSlug, '/embed/' + gameSlug)}?size=${size}&theme=${theme}&title=${title}&platforms=${platforms}`;
+    }
+
+    // Generate embed code
+    function generateEmbedCode() {
+      const url = generateEmbedUrl();
+      return `<iframe src="${url}" width="100%" height="400" frameborder="0" allowtransparency="true"></iframe>`;
+    }
+
+    // Update preview and code
+    function updateEmbed() {
+      const url = generateEmbedUrl();
+      const code = generateEmbedCode();
+      
+      if (embedPreview) {
+        embedPreview.src = url;
+      }
+      if (embedCode) {
+        embedCode.value = code;
+      }
+    }
+
+    // Open modal
+    embedBtn.addEventListener('click', () => {
+      if (embedModal) {
+        embedModal.classList.remove('hidden');
+        updateEmbed();
+      }
+    });
+
+    // Close modal
+    if (closeModal) {
+      closeModal.addEventListener('click', () => {
+        if (embedModal) {
+          embedModal.classList.add('hidden');
+        }
+      });
+    }
+
+    // Close on outside click
+    if (embedModal) {
+      embedModal.addEventListener('click', (e) => {
+        if (e.target === embedModal) {
+          embedModal.classList.add('hidden');
+        }
+      });
+    }
+
+    // Update on option change
+    [embedSize, embedTheme, embedTitle, embedPlatforms].forEach(element => {
+      if (element) {
+        element.addEventListener('change', updateEmbed);
+      }
+    });
+
+    // Copy code
+    if (copyBtn && embedCode) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(embedCode.value);
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('bg-green-500');
+          copyBtn.classList.remove('bg-neon-cyan');
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('bg-green-500');
+            copyBtn.classList.add('bg-neon-cyan');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          // Fallback: select text
+          embedCode.select();
+          document.execCommand('copy');
+        }
+      });
+    }
+  }
+
   // Initialize on page load
   if (typeof window !== 'undefined') {
     initPlatformSelector();
-    initFavorites();
+    initWishlist();
     initShare();
+    initEmbed();
   }
 </script>

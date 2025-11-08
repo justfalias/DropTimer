@@ -1,0 +1,91 @@
+---
+import EmbedWidget from '@/components/EmbedWidget.astro';
+import type { Game } from '@/types/Game';
+import gamesData from '@/data/games.json';
+
+export async function getStaticPaths() {
+  const games: Game[] = gamesData as Game[];
+  
+  return games.map((game) => ({
+    params: { slug: game.slug },
+    props: { game },
+  }));
+}
+
+const { slug } = Astro.params;
+const game = Astro.props.game || (gamesData as Game[]).find((g) => g.slug === slug);
+
+if (!game) {
+  return Astro.redirect('/404');
+}
+
+// Get query parameters for customization
+const size = (Astro.url.searchParams.get('size') || 'medium') as 'small' | 'medium' | 'large';
+const theme = (Astro.url.searchParams.get('theme') || 'dark') as 'dark' | 'light' | 'neon';
+const showTitle = Astro.url.searchParams.get('title') !== 'false';
+const showPlatforms = Astro.url.searchParams.get('platforms') !== 'false';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{game.name} Countdown - DropTimer.gg</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow: hidden;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'dark-bg': '#0a0a0f',
+              'dark-surface': '#1a1a2e',
+              'dark-card': '#1e1e2e',
+              'dark-card-hover': '#2a2a3e',
+              'neon-cyan': '#00f5ff',
+              'neon-purple': '#8b5cf6',
+              'text-primary': '#e0e0e0',
+              'text-secondary': '#a0a0a0',
+              'platform-steam': '#1b2838',
+              'platform-playstation': '#003087',
+              'platform-xbox': '#107c10',
+              'platform-switch': '#e60012',
+              'platform-pc': '#6c757d',
+            },
+            fontFamily: {
+              'heading': ['Space Grotesk', 'Poppins', 'sans-serif'],
+              'body': ['Poppins', 'sans-serif'],
+            },
+            boxShadow: {
+              'neon-cyan': '0 0 10px rgba(0, 245, 255, 0.5), 0 0 20px rgba(0, 245, 255, 0.3)',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <EmbedWidget 
+      game={game} 
+      size={size}
+      theme={theme}
+      showTitle={showTitle}
+      showPlatforms={showPlatforms}
+    />
+    <script src="/scripts/countdown.js" defer></script>
+  </body>
+</html>
+
