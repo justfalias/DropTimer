@@ -6,110 +6,238 @@ import type { Game } from '@/types/Game';
 import gamesData from '@/data/games.json';
 
 // Export getStaticPaths to tell Astro which slugs to pre-render
-// This is required for dynamic routes in Astro
 export async function getStaticPaths() {
   const games: Game[] = gamesData as Game[];
   
-  // Return an array of objects with the slug parameter for each game
   return games.map((game) => ({
     params: { slug: game.slug },
-    props: { game }, // Pass the game data as props for convenience
+    props: { game },
   }));
 }
 
-// Get the slug from the URL params
 const { slug } = Astro.params;
-
-// Get the game from props (passed by getStaticPaths) or find it by slug
 const game = Astro.props.game || (gamesData as Game[]).find((g) => g.slug === slug);
 
-// If game not found, return 404
 if (!game) {
   return Astro.redirect('/404');
 }
 
-// Format release date for display
 const releaseDateFormatted = new Date(game.releaseDate).toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
 });
+
+const shareUrl = `${Astro.url.origin}/game/${game.slug}`;
 ---
 
 <MainLayout title={`${game.name} - DropTimer.gg`} description={game.description}>
-  <article class="container mx-auto px-4 py-8 md:py-12">
-    <!-- Back Button -->
-    <a
-      href="/"
-      class="inline-flex items-center gap-2 text-text-secondary hover:text-neon-cyan transition-colors duration-200 mb-8 group"
-      data-astro-prefetch
-    >
-      <svg
-        class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
-      Back to Games
-    </a>
-
-    <!-- Game Details -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-      <!-- Cover Image -->
-      <div class="relative rounded-lg overflow-hidden border border-dark-card-hover glow-effect">
+  <div class="min-h-screen flex flex-col">
+    <!-- Hero Section with Timer -->
+    <section class="flex-1 flex items-center justify-center px-4 py-12 md:py-16 relative overflow-hidden">
+      <!-- Background Image with Overlay -->
+      <div class="absolute inset-0 z-0">
         <img
           src={game.image}
           alt={`${game.name} cover`}
-          class="w-full h-auto object-cover"
+          class="w-full h-full object-cover opacity-20 blur-3xl scale-110"
           loading="eager"
         />
-        <div class="absolute inset-0 bg-gradient-to-t from-dark-bg/80 to-transparent pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-bg/80 to-dark-bg"></div>
       </div>
 
-      <!-- Game Info -->
-      <div class="space-y-6">
-        <!-- Title -->
-        <h1 class="text-3xl md:text-4xl font-heading font-bold gradient-text">
+      <!-- Content -->
+      <div class="container mx-auto relative z-10 text-center">
+        <!-- Game Title -->
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-heading font-bold gradient-text mb-8 animate-fade-in">
           {game.name}
         </h1>
 
-        <!-- Description -->
-        <p class="text-lg text-text-primary leading-relaxed">
-          {game.description}
-        </p>
-
-        <!-- Countdown Timer -->
-        <div class="bg-dark-card rounded-lg p-6 border border-dark-card-hover">
-          <h2 class="text-sm uppercase tracking-wider text-text-secondary mb-4">Time Until Release</h2>
-          <CountdownTimer releaseDate={game.releaseDate} />
+        <!-- Large Countdown Timer -->
+        <div class="mb-12 animate-fade-in" style="animation-delay: 0.2s;">
+          <CountdownTimer releaseDate={game.releaseDate} large={true} />
         </div>
 
         <!-- Release Date -->
-        <div class="space-y-2">
-          <h2 class="text-sm uppercase tracking-wider text-text-secondary">Release Date</h2>
-          <p class="text-xl font-mono text-neon-cyan">{releaseDateFormatted}</p>
+        <p class="text-xl md:text-2xl text-text-secondary mb-8 font-mono animate-fade-in" style="animation-delay: 0.4s;">
+          {releaseDateFormatted}
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 animate-fade-in" style="animation-delay: 0.6s;">
+          <!-- Favorite Button -->
+          <button
+            id="favorite-btn"
+            class="flex items-center gap-2 px-6 py-3 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-primary hover:text-neon-cyan group"
+            data-game-slug={game.slug}
+          >
+            <svg
+              id="favorite-icon"
+              class="w-5 h-5 transition-all duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+            <span id="favorite-text">Add to Favorites</span>
+          </button>
+
+          <!-- Share Button -->
+          <button
+            id="share-btn"
+            class="flex items-center gap-2 px-6 py-3 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-primary hover:text-neon-cyan group"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+              />
+            </svg>
+            Share
+          </button>
         </div>
 
         <!-- Platforms -->
-        <div class="space-y-3">
-          <h2 class="text-sm uppercase tracking-wider text-text-secondary">Available On</h2>
-          <div class="flex flex-wrap gap-3">
-            {game.platforms.map((platform) => (
-              <PlatformTag platform={platform} />
-            ))}
-          </div>
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-8 animate-fade-in" style="animation-delay: 0.8s;">
+          {game.platforms.map((platform) => (
+            <PlatformTag platform={platform} />
+          ))}
         </div>
+
+        <!-- Back to Home -->
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 text-text-secondary hover:text-neon-cyan transition-colors duration-200 text-sm animate-fade-in"
+          style="animation-delay: 1s;"
+          data-astro-prefetch
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back to Games
+        </a>
       </div>
-    </div>
-  </article>
+    </section>
+  </div>
 </MainLayout>
 
+<script define:vars={{ gameSlug: game.slug, shareUrl }}>
+  // Favorite functionality
+  function initFavorites() {
+    const favoriteBtn = document.getElementById('favorite-btn');
+    const favoriteIcon = document.getElementById('favorite-icon');
+    const favoriteText = document.getElementById('favorite-text');
+    
+    if (!favoriteBtn || !favoriteIcon || !favoriteText) return;
+
+    // Load favorites from localStorage
+    function loadFavorites() {
+      try {
+        const favorites = JSON.parse(localStorage.getItem('droptimer-favorites') || '[]');
+        return new Set(favorites);
+      } catch {
+        return new Set();
+      }
+    }
+
+    // Save favorites to localStorage
+    function saveFavorites(favorites) {
+      localStorage.setItem('droptimer-favorites', JSON.stringify(Array.from(favorites)));
+    }
+
+    // Check if game is favorited
+    const favorites = loadFavorites();
+    const isFavorited = favorites.has(gameSlug);
+    
+    // Update button state
+    function updateButtonState(favorited) {
+      if (favorited) {
+        favoriteIcon.classList.add('fill-neon-cyan', 'text-neon-cyan');
+        favoriteText.textContent = 'Favorited';
+      } else {
+        favoriteIcon.classList.remove('fill-neon-cyan', 'text-neon-cyan');
+        favoriteText.textContent = 'Add to Favorites';
+      }
+    }
+
+    updateButtonState(isFavorited);
+
+    // Toggle favorite on click
+    favoriteBtn.addEventListener('click', () => {
+      const currentFavorites = loadFavorites();
+      
+      if (currentFavorites.has(gameSlug)) {
+        currentFavorites.delete(gameSlug);
+        updateButtonState(false);
+      } else {
+        currentFavorites.add(gameSlug);
+        updateButtonState(true);
+      }
+      
+      saveFavorites(currentFavorites);
+    });
+  }
+
+  // Share functionality
+  function initShare() {
+    const shareBtn = document.getElementById('share-btn');
+    if (!shareBtn) return;
+
+    shareBtn.addEventListener('click', async () => {
+      const shareData = {
+        title: document.title,
+        text: `Check out the countdown for ${document.querySelector('h1')?.textContent || 'this game'}!`,
+        url: shareUrl,
+      };
+
+      try {
+        // Try Web Share API first (mobile)
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else {
+          // Fallback: Copy to clipboard
+          await navigator.clipboard.writeText(shareUrl);
+          const originalText = shareBtn.innerHTML;
+          shareBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!';
+          setTimeout(() => {
+            shareBtn.innerHTML = originalText;
+          }, 2000);
+        }
+      } catch (err) {
+        // User cancelled or error occurred
+        if (err.name !== 'AbortError') {
+          console.error('Error sharing:', err);
+        }
+      }
+    });
+  }
+
+  // Initialize on page load
+  if (typeof window !== 'undefined') {
+    initFavorites();
+    initShare();
+  }
+</script>

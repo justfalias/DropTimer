@@ -1,6 +1,7 @@
 ---
 import MainLayout from '@/components/MainLayout.astro';
 import GameCard from '@/components/GameCard.astro';
+import CountdownTimer from '@/components/CountdownTimer.astro';
 import type { Game } from '@/types/Game';
 import gamesData from '@/data/games.json';
 
@@ -11,17 +12,87 @@ const games: Game[] = gamesData as Game[];
 const sortedGames = [...games].sort((a, b) => {
   return new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime();
 });
+
+// Get the next upcoming game (first in sorted list)
+const nextGame = sortedGames[0];
 ---
 
 <MainLayout title="DropTimer.gg - Track Upcoming Game Releases">
-  <!-- Hero Section -->
-  <section class="container mx-auto px-4 py-12 md:py-16">
-    <div class="text-center mb-12 animate-fade-in">
-      <h2 class="text-4xl md:text-5xl font-heading font-bold mb-4 gradient-text">
-        Upcoming Game Releases
+  <!-- Hero Section with Next Game -->
+  {nextGame && (
+    <section class="relative min-h-[60vh] flex items-center justify-center px-4 py-12 md:py-16 overflow-hidden">
+      <!-- Background Image -->
+      <div class="absolute inset-0 z-0">
+        <img
+          src={nextGame.image}
+          alt={`${nextGame.name} cover`}
+          class="w-full h-full object-cover opacity-20 blur-3xl scale-110"
+          loading="eager"
+        />
+        <div class="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-bg/80 to-dark-bg"></div>
+      </div>
+
+      <!-- Content -->
+      <div class="container mx-auto relative z-10 text-center">
+        <p class="text-sm md:text-base text-text-secondary uppercase tracking-wider mb-4 animate-fade-in">
+          Next Release
+        </p>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-heading font-bold gradient-text mb-8 animate-fade-in" style="animation-delay: 0.1s;">
+          {nextGame.name}
+        </h2>
+        
+        <!-- Large Countdown Timer -->
+        <div class="mb-8 animate-fade-in" style="animation-delay: 0.2s;">
+          <CountdownTimer releaseDate={nextGame.releaseDate} large={true} />
+        </div>
+
+        <!-- View Game Button -->
+        <a
+          href={`/game/${nextGame.slug}`}
+          class="inline-flex items-center gap-2 px-6 py-3 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-primary hover:text-neon-cyan group animate-fade-in"
+          style="animation-delay: 0.3s;"
+          data-astro-prefetch
+        >
+          View Details
+          <svg
+            class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- Favorites Section (if any) -->
+  <section id="favorites-section" class="container mx-auto px-4 py-12 md:py-16 hidden">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold gradient-text mb-4">
+        Your Favorites
       </h2>
       <p class="text-lg text-text-secondary max-w-2xl mx-auto">
-        Never miss a release. Track countdowns for the hottest games coming to Steam, PlayStation, Xbox, Switch, and PC.
+        Your saved game countdowns
+      </p>
+    </div>
+    <div id="favorites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- All Games Section -->
+  <section class="container mx-auto px-4 py-12 md:py-16">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold gradient-text mb-4">
+        All Upcoming Releases
+      </h2>
+      <p class="text-lg text-text-secondary max-w-2xl mx-auto">
+        Track countdowns for all upcoming game releases
       </p>
     </div>
 
@@ -37,7 +108,7 @@ const sortedGames = [...games].sort((a, b) => {
       ))}
     </div>
 
-    <!-- Empty State (if no games) -->
+    <!-- Empty State -->
     {sortedGames.length === 0 && (
       <div class="text-center py-16">
         <p class="text-text-secondary text-lg">No upcoming games found.</p>
@@ -46,3 +117,80 @@ const sortedGames = [...games].sort((a, b) => {
   </section>
 </MainLayout>
 
+<script define:vars={{ games: JSON.stringify(sortedGames) }}>
+  // Load and display favorites on homepage
+  if (typeof window !== 'undefined') {
+    const allGames = JSON.parse(games);
+    
+    function loadFavorites() {
+      try {
+        const favorites = JSON.parse(localStorage.getItem('droptimer-favorites') || '[]');
+        return new Set(favorites);
+      } catch {
+        return new Set();
+      }
+    }
+
+    function displayFavorites() {
+      const favorites = loadFavorites();
+      const favoritesSection = document.getElementById('favorites-section');
+      const favoritesGrid = document.getElementById('favorites-grid');
+      
+      if (!favoritesSection || !favoritesGrid) return;
+      
+      if (favorites.size === 0) {
+        favoritesSection.classList.add('hidden');
+        return;
+      }
+      
+      // Show favorites section
+      favoritesSection.classList.remove('hidden');
+      
+      // Filter games that are favorited
+      const favoriteGames = allGames.filter(game => favorites.has(game.slug));
+      
+      if (favoriteGames.length === 0) {
+        favoritesGrid.innerHTML = '<p class="text-text-secondary col-span-full text-center py-8">No favorite games yet. Click the heart icon on any game to add it to favorites!</p>';
+        return;
+      }
+      
+      // Render favorite games (simplified version)
+      favoritesGrid.innerHTML = favoriteGames.map(game => {
+        const releaseDate = new Date(game.releaseDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        
+        return `
+          <a href="/game/${game.slug}" class="group block card-hover" data-astro-prefetch>
+            <div class="relative overflow-hidden rounded-lg bg-dark-card border border-dark-card-hover">
+              <div class="relative h-64 overflow-hidden">
+                <img src="${game.image}" alt="${game.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>
+                <div class="absolute top-4 right-4">
+                  <svg class="w-6 h-6 fill-neon-cyan text-neon-cyan" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="p-4 space-y-3">
+                <h3 class="text-lg font-heading font-bold text-text-primary group-hover:text-neon-cyan transition-colors">${game.name}</h3>
+                <p class="text-sm text-text-secondary">Release: ${releaseDate}</p>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    // Display favorites on load
+    displayFavorites();
+    
+    // Listen for storage changes (when favorites are updated on other pages)
+    window.addEventListener('storage', displayFavorites);
+    
+    // Also check periodically (for same-tab updates)
+    setInterval(displayFavorites, 1000);
+  }
+</script>
