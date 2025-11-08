@@ -22,44 +22,92 @@ if (!game) {
   return Astro.redirect('/404');
 }
 
-const releaseDateFormatted = new Date(game.releaseDate).toLocaleDateString('en-US', {
+// Helper function to get release date for a platform
+function getReleaseDateForPlatform(game: Game, platform?: string): string {
+  if (platform && game.platformReleaseDates && game.platformReleaseDates[platform as keyof typeof game.platformReleaseDates]) {
+    return game.platformReleaseDates[platform as keyof typeof game.platformReleaseDates]!;
+  }
+  return game.releaseDate;
+}
+
+// Get the earliest release date for display
+function getEarliestReleaseDate(game: Game): string {
+  if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length > 0) {
+    const dates = Object.values(game.platformReleaseDates).filter(Boolean) as string[];
+    if (dates.length > 0) {
+      return dates.sort()[0];
+    }
+  }
+  return game.releaseDate;
+}
+
+const defaultReleaseDate = getEarliestReleaseDate(game);
+const releaseDateFormatted = new Date(defaultReleaseDate).toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
 
-const shareUrl = `${Astro.url.origin}/game/${game.slug}`;
+const shareUrl = `${Astro.url.origin}/${game.slug}`;
 ---
 
 <MainLayout title={`${game.name} - DropTimer.gg`} description={game.description}>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col relative">
+    <!-- Fixed Background Image -->
+    <div class="fixed inset-0 z-0">
+      <img
+        src={game.image}
+        alt={`${game.name} cover`}
+        class="w-full h-full object-cover"
+        loading="eager"
+      />
+      <!-- Gradient Overlay Layers -->
+      <div class="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-bg/60 to-dark-bg"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-dark-bg/40 via-transparent to-dark-bg/40"></div>
+    </div>
+
     <!-- Hero Section with Timer -->
-    <section class="flex-1 flex items-center justify-center px-4 py-12 md:py-16 relative overflow-hidden">
-      <!-- Background Image with Overlay -->
-      <div class="absolute inset-0 z-0">
-        <img
-          src={game.image}
-          alt={`${game.name} cover`}
-          class="w-full h-full object-cover opacity-20 blur-3xl scale-110"
-          loading="eager"
-        />
-        <div class="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-bg/80 to-dark-bg"></div>
-      </div>
+    <section class="flex-1 flex items-center justify-center px-4 py-12 md:py-16 relative z-10 min-h-screen">
 
       <!-- Content -->
-      <div class="container mx-auto relative z-10 text-center">
+      <div class="container mx-auto text-center">
         <!-- Game Title -->
         <h1 class="text-4xl md:text-6xl lg:text-7xl font-heading font-bold gradient-text mb-8 animate-fade-in">
           {game.name}
         </h1>
 
+        <!-- Platform Selector (if multiple platforms with different dates) -->
+        {game.platformReleaseDates && Object.keys(game.platformReleaseDates).length > 1 && (
+          <div class="mb-6 animate-fade-in" style="animation-delay: 0.15s;">
+            <p class="text-sm text-text-secondary mb-3">Select Platform:</p>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              {game.platforms.map((platform) => {
+                const platformDate = game.platformReleaseDates?.[platform];
+                const dateStr = platformDate 
+                  ? new Date(platformDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  : new Date(game.releaseDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                return (
+                  <button
+                    class="platform-select-btn px-4 py-2 rounded-lg bg-dark-card/50 hover:bg-dark-card border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm"
+                    data-platform={platform}
+                    data-release-date={platformDate || game.releaseDate}
+                  >
+                    {platform} - {dateStr}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <!-- Large Countdown Timer -->
         <div class="mb-12 animate-fade-in" style="animation-delay: 0.2s;">
-          <CountdownTimer releaseDate={game.releaseDate} large={true} />
+          <CountdownTimer releaseDate={defaultReleaseDate} large={true} id="main-countdown" />
         </div>
 
         <!-- Release Date -->
-        <p class="text-xl md:text-2xl text-text-secondary mb-8 font-mono animate-fade-in" style="animation-delay: 0.4s;">
+        <p id="release-date-display" class="text-xl md:text-2xl text-text-secondary mb-8 font-mono animate-fade-in" style="animation-delay: 0.4s;">
           {releaseDateFormatted}
         </p>
 
@@ -144,7 +192,61 @@ const shareUrl = `${Astro.url.origin}/game/${game.slug}`;
   </div>
 </MainLayout>
 
-<script define:vars={{ gameSlug: game.slug, shareUrl }}>
+<script define:vars={{ gameSlug: game.slug, shareUrl, gameData: JSON.stringify(game) }}>
+  // Platform selector functionality
+  function initPlatformSelector() {
+    const platformButtons = document.querySelectorAll('.platform-select-btn');
+    const countdownTimer = document.getElementById('main-countdown');
+    const releaseDateDisplay = document.getElementById('release-date-display');
+    const game = JSON.parse(gameData);
+    
+    if (platformButtons.length === 0) return;
+    
+    // Set first platform as active by default
+    if (platformButtons.length > 0) {
+      platformButtons[0].classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+      platformButtons[0].classList.remove('bg-dark-card/50', 'text-text-secondary');
+    }
+    
+    platformButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const platform = btn.getAttribute('data-platform');
+        const releaseDate = btn.getAttribute('data-release-date');
+        
+        if (!releaseDate) return;
+        
+        // Update active button
+        platformButtons.forEach(b => {
+          b.classList.remove('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+          b.classList.add('bg-dark-card/50', 'text-text-secondary');
+        });
+        btn.classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+        btn.classList.remove('bg-dark-card/50', 'text-text-secondary');
+        
+        // Update countdown timer
+        if (countdownTimer) {
+          const timerElement = countdownTimer.querySelector('[data-release-date]');
+          if (timerElement) {
+            timerElement.setAttribute('data-release-date', releaseDate);
+            // Trigger update
+            const event = new CustomEvent('updateTimer', { detail: { releaseDate } });
+            window.dispatchEvent(event);
+          }
+        }
+        
+        // Update release date display
+        if (releaseDateDisplay) {
+          const date = new Date(releaseDate);
+          releaseDateDisplay.textContent = date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+        }
+      });
+    });
+  }
+
   // Favorite functionality
   function initFavorites() {
     const favoriteBtn = document.getElementById('favorite-btn');
@@ -237,6 +339,7 @@ const shareUrl = `${Astro.url.origin}/game/${game.slug}`;
 
   // Initialize on page load
   if (typeof window !== 'undefined') {
+    initPlatformSelector();
     initFavorites();
     initShare();
   }

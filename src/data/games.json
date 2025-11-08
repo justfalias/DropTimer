@@ -1,12 +1,143 @@
 [
   {
+    "slug": "sleep-awake",
+    "name": "Sleep Awake",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-02T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-02T00:00:00.000Z"
+    },
+    "image": "/images/games/sleep-awake.jpg",
+    "description": "<p>Sleep Awake is an action game. It is set to come out in 2025. <br>Sleep Awake is available on PC. <br>Howard Redekopp produced the game. <br></p>..."
+  },
+  {
+    "slug": "blood-refreshed-supply",
+    "name": "Blood: Refreshed Supply",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-03T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-03T00:00:00.000Z"
+    },
+    "image": "/images/games/blood-refreshed-supply.jpg",
+    "description": "Blood: Refreshed Supply vous met dans la peau de Caleb, un pro de la gâchette mort-vivant en quête de vengeance contre son ancien maître démoniaque, Tchernobog. Malgré son ancien statut de redoutable ..."
+  },
+  {
+    "slug": "routine",
+    "name": "Routine",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-04T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-04T00:00:00.000Z"
+    },
+    "image": "/images/games/routine.jpg",
+    "description": "ROUTINE is a First Person Sci-Fi Horror title set on an abandoned Lunar base designed around an 80’s vision of the future.\n\nCurious exploration turns into a need for survival when a lunar base goes co..."
+  },
+  {
+    "slug": "metroid-prime-4-beyond",
+    "name": "Metroid Prime 4: Beyond",
+    "platforms": [
+      "Switch"
+    ],
+    "releaseDate": "2025-12-04T00:00:00.000Z",
+    "platformReleaseDates": {
+      "Switch": "2025-12-04T00:00:00.000Z"
+    },
+    "image": "/images/games/metroid-prime-4-beyond.jpeg",
+    "description": "The galaxy’s greatest bounty hunter Samus Aran will embark on a new mission in Metroid Prime 4: Beyond, coming to Nintendo Switch in 2025...."
+  },
+  {
+    "slug": "octopath-traveler-0",
+    "name": "Octopath Traveler 0",
+    "platforms": [
+      "Switch",
+      "PlayStation",
+      "PC"
+    ],
+    "releaseDate": "2025-12-04T00:00:00.000Z",
+    "platformReleaseDates": {
+      "Switch": "2025-12-04T00:00:00.000Z",
+      "PlayStation": "2025-12-04T00:00:00.000Z",
+      "PC": "2025-12-04T00:00:00.000Z"
+    },
+    "image": "/images/games/octopath-traveler-0.jpg",
+    "description": "Start from zero and discover the newest entry in the OCTOPATH TRAVELER series. Experience a story of restoration and retribution over the divine rings—an epic saga that unfolds across the realm of Ors..."
+  },
+  {
+    "slug": "skate-story",
+    "name": "Skate Story",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-08T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-08T00:00:00.000Z"
+    },
+    "image": "/images/games/skate-story.jpg",
+    "description": "This psychedelic skateboarding experience comes with an aesthetic like Superhot and controls like Skate...."
+  },
+  {
+    "slug": "star-citizen",
+    "name": "Star Citizen",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-11T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-11T00:00:00.000Z"
+    },
+    "image": "/images/games/star-citizen.jpg",
+    "description": "FIGHT. TRADE. EXPLORE. \r\nA UNIVERSE AWAITS.\r\n\r\nImagine a universe that combines the freedom of exploration, the thrill of combat, and the unique challenge of building a life in space. Star Citizen put..."
+  },
+  {
+    "slug": "terminator-2d-no-fate",
+    "name": "Terminator 2D: No Fate",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-12T00:00:00.000Z",
+    "image": "/images/games/terminator-2d-no-fate.jpg",
+    "description": "<p>Terminator 2D: No Fate is an action-platformer game. It is set to come out in 2025. </p>\n\n<p></p>..."
+  },
+  {
+    "slug": "shadows-of-soldiers",
+    "name": "Shadows of Soldiers",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-15T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-15T00:00:00.000Z"
+    },
+    "image": "/images/games/shadows-of-soldiers.jpg",
+    "description": "About This Game\n\nImmerse yourself in the heart-pounding action of \"Shadows of Soldiers,\" an adrenaline-fuelled 8v8 third-person cover-based tactical multiplayer shooter! Prepare to embark on an epic b..."
+  },
+  {
+    "slug": "sunkissed-city",
+    "name": "Sunkissed City",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-30T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-30T00:00:00.000Z"
+    },
+    "image": "/images/games/default.jpg",
+    "description": "Sunkissed City is a life-sim set in an upbeat, sun-kissed seaside metropolis full of funky vibes and quirky characters. Stake out your new life in the city, tending to DIY gardens, learning new skills..."
+  },
+  {
     "slug": "fable2020",
     "name": "Fable",
     "platforms": [
       "PC"
     ],
     "releaseDate": "2025-12-31T00:00:00.000Z",
-    "image": "https://media.rawg.io/media/games/705/7052ebf19b7b57ada5eeb21dea59f0e7.jpg",
+    "image": "/images/games/fable2020.jpg",
     "description": "Explore a land of fantastical creatures and wondrous places. What does it mean to be a Hero? Well, in the fairytale land of Albion, that is entirely up to you. With a dark threat looming, your choices..."
   },
   {
@@ -16,7 +147,7 @@
       "Switch"
     ],
     "releaseDate": "2025-12-31T00:00:00.000Z",
-    "image": "https://media.rawg.io/media/screenshots/a4d/a4d4c220ad3c7731c4624d12b7adb9d4.jpg",
+    "image": "/images/games/metroid-prime-4.jpg",
     "description": "Metroid Prime 4 is currently in development for Nintendo Switch...."
   },
   {
@@ -40,13 +171,287 @@
     "description": "Marvel’s Blade game will take players to a quarantined section of Paris in the middle of a supernatural emergency. Vampires have emerged, terrorizing the city of lights and forcing Parisians to shelte..."
   },
   {
+    "slug": "replaced",
+    "name": "Replaced",
+    "platforms": [
+      "PC",
+      "Xbox"
+    ],
+    "releaseDate": "2025-12-31T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-31T00:00:00.000Z",
+      "Xbox": "2025-12-31T00:00:00.000Z"
+    },
+    "image": "/images/games/replaced.jpg",
+    "description": "REPLACED is a cinematic retro-futuristic action-thriller set in a dystopian alternative version the of the 80s' USA. You are R.E.A.C.H. - an AI trapped in mortal human body against it's will. Explore ..."
+  },
+  {
+    "slug": "wolf-among-us-2",
+    "name": "The Wolf Among Us 2",
+    "platforms": [
+      "PlayStation",
+      "PC",
+      "Xbox"
+    ],
+    "releaseDate": "2025-12-31T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2025-12-31T00:00:00.000Z",
+      "PC": "2025-12-31T00:00:00.000Z",
+      "Xbox": "2025-12-31T00:00:00.000Z"
+    },
+    "image": "/images/games/wolf-among-us-2.jpg",
+    "description": "Play as Bigby, “The Big Bad Wolf” and Sheriff of Fabletown, as you return to a gritty detective noir world where there are no fairy tale endings.\r\n\r\nThe Wolf Among Us 2 picks up six months after the e..."
+  },
+  {
+    "slug": "mouse-3",
+    "name": "MОUSE",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-31T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-31T00:00:00.000Z"
+    },
+    "image": "/images/games/mouse-3.jpg",
+    "description": "MOUSE, a gritty and noir-fueled FPS shooter that draws inspiration from classic cartoons of the 1930s.\n\nMOUSE boasts a unique visual style inspired by the charm of 1930s rubber hose animation, transpo..."
+  },
+  {
+    "slug": "cairn-2025",
+    "name": "Cairn (2025)",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2025-12-31T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2025-12-31T00:00:00.000Z"
+    },
+    "image": "/images/games/cairn-2025.jpg",
+    "description": "Reach a summit never climbed before in this survival-climber from the creators of Furi and Haven. Climb anywhere and plan your route carefully, managing pitons and resources to survive the unforgiving..."
+  },
+  {
+    "slug": "pathologic-3",
+    "name": "Pathologic 3",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2026-01-09T00:00:00.000Z",
+    "image": "/images/games/pathologic-3.jpg",
+    "description": "<p>Pathologic 3 is an adventure game. It is set to come out in 2026. </p>\n\n<p></p>..."
+  },
+  {
+    "slug": "code-vein-2",
+    "name": "Code Vein 2",
+    "platforms": [
+      "PC",
+      "PlayStation"
+    ],
+    "releaseDate": "2026-01-30T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2026-01-30T00:00:00.000Z",
+      "PlayStation": "2026-01-30T00:00:00.000Z"
+    },
+    "image": "/images/games/code-vein-2.jpg",
+    "description": "<p>Code Vein 2 is an action game. <br>Code Vein 2 is available on PC and PlayStation 5. The game is sold via Steam. </p>\n\n<p></p>..."
+  },
+  {
+    "slug": "nioh-3",
+    "name": "Nioh 3",
+    "platforms": [
+      "PlayStation",
+      "PC"
+    ],
+    "releaseDate": "2026-02-06T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-02-06T00:00:00.000Z",
+      "PC": "2026-02-06T00:00:00.000Z"
+    },
+    "image": "/images/games/nioh-3.jpg",
+    "description": "<p>Nioh 3 is an action game. <br>You can play Nioh 3 on PlayStation 5 and PC. <br>It was produced by Fumihiko Yasuda and Kohei Shibata. <br></p>..."
+  },
+  {
+    "slug": "yakuza-kiwami-3",
+    "name": "Yakuza Kiwami 3 & Dark Ties",
+    "platforms": [
+      "Switch",
+      "PC"
+    ],
+    "releaseDate": "2026-02-12T00:00:00.000Z",
+    "platformReleaseDates": {
+      "Switch": "2026-02-12T00:00:00.000Z",
+      "PC": "2026-02-12T00:00:00.000Z"
+    },
+    "image": "/images/games/yakuza-kiwami-3.jpg",
+    "description": "<p>Yakuza Kiwami 3 & Dark Ties is an action game. It is set to come out in 2026. <br>Yakuza Kiwami 3 & Dark Ties is available on Nintendo Switch and PC. </p>\n\n<p></p>..."
+  },
+  {
+    "slug": "high-on-life-2",
+    "name": "High On Life 2",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2026-02-13T00:00:00.000Z",
+    "image": "/images/games/high-on-life-2.jpg",
+    "description": "<p>High On Life 2 is a shooter game. It is set to come out in 2026. </p>\n\n<p></p>..."
+  },
+  {
+    "slug": "resident-evil-9-requiem",
+    "name": "Resident Evil 9: Requiem",
+    "platforms": [
+      "PlayStation",
+      "PC"
+    ],
+    "releaseDate": "2026-02-27T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-02-27T00:00:00.000Z",
+      "PC": "2026-02-27T00:00:00.000Z"
+    },
+    "image": "/images/games/resident-evil-9-requiem.jpg",
+    "description": "Resident Evil Requiem is the ninth title in the mainline Resident Evil series.\n\nPrepare to escape death in a heart-stopping experience that will chill you to your core.\n\nTechnological advancements com..."
+  },
+  {
+    "slug": "crimson-desert",
+    "name": "Crimson Desert",
+    "platforms": [
+      "PlayStation",
+      "PC",
+      "Xbox"
+    ],
+    "releaseDate": "2026-03-19T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-03-19T00:00:00.000Z",
+      "PC": "2026-03-19T00:00:00.000Z",
+      "Xbox": "2026-03-19T00:00:00.000Z"
+    },
+    "image": "/images/games/crimson-desert.jpg",
+    "description": "Crimson Desert is an open-world action-adventure set in the beautiful yet brutal continent of Pywel. Discover adventure, uncover wonders, and experience thrilling action as you witness the saga surrou..."
+  },
+  {
+    "slug": "mouse-pi-for-hire",
+    "name": "MOUSE: P.I. For Hire",
+    "platforms": [
+      "PlayStation",
+      "Switch",
+      "PC"
+    ],
+    "releaseDate": "2026-03-19T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-03-19T00:00:00.000Z",
+      "Switch": "2026-03-19T00:00:00.000Z",
+      "PC": "2026-03-19T00:00:00.000Z"
+    },
+    "image": "/images/games/mouse-pi-for-hire.jpg",
+    "description": "Join private investigator Jack Pepper on a guns blazing, jazz-fueled adventure in MOUSE: P.I. For Hire. MOUSE combines the charm of hand-drawn rubber hose animation inspired by the classic cartoons of..."
+  },
+  {
+    "slug": "saros",
+    "name": "Saros",
+    "platforms": [
+      "PlayStation"
+    ],
+    "releaseDate": "2026-03-20T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-03-20T00:00:00.000Z"
+    },
+    "image": "/images/games/saros.jpg",
+    "description": "SAROS is an action game with the haunting story of a lost off-world colony on Carcosa under an ominous eclipse. You play as Arjun Devraj, a powerful Soltari Enforcer who will stop at nothing to find w..."
+  },
+  {
+    "slug": "007-first-light",
+    "name": "007 First Light",
+    "platforms": [
+      "Switch",
+      "PC",
+      "PlayStation"
+    ],
+    "releaseDate": "2026-03-27T00:00:00.000Z",
+    "platformReleaseDates": {
+      "Switch": "2026-03-27T00:00:00.000Z",
+      "PC": "2026-03-27T00:00:00.000Z",
+      "PlayStation": "2026-03-27T00:00:00.000Z"
+    },
+    "image": "/images/games/007-first-light.jpg",
+    "description": "007 First Light is a brand new James Bond video game developed and published by IO Interactive.\n\nFeaturing a wholly original Bond origin story, players will step into the shoes of the world's favorite..."
+  },
+  {
+    "slug": "reanimal",
+    "name": "Reanimal",
+    "platforms": [
+      "PlayStation",
+      "Switch",
+      "PC"
+    ],
+    "releaseDate": "2026-03-31T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-03-31T00:00:00.000Z",
+      "Switch": "2026-03-31T00:00:00.000Z",
+      "PC": "2026-03-31T00:00:00.000Z"
+    },
+    "image": "/images/games/reanimal.jpg",
+    "description": "The original creators of Little Nightmares™ & Little Nightmares™ II have returned to take you on a more terrifying journey than ever before. In this co-op horror adventure game, you play as a brother ..."
+  },
+  {
+    "slug": "cthulhu-the-cosmic-abyss",
+    "name": "Cthulhu: The Cosmic Abyss",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2026-04-16T00:00:00.000Z",
+    "image": "/images/games/cthulhu-the-cosmic-abyss.jpg",
+    "description": "<p>Cthulhu: The Cosmic Abyss is an action game. It is set to come out in 2026. </p>\n\n<p></p>..."
+  },
+  {
     "slug": "grand-theft-aito-vi",
     "name": "Grand Theft Auto VI",
     "platforms": [
       "PlayStation"
     ],
     "releaseDate": "2026-05-26T00:00:00.000Z",
-    "image": "https://media.rawg.io/media/games/734/7342a1cd82c8997ec620084ae4c2e7e4.jpg",
+    "image": "/images/games/grand-theft-aito-vi.jpg",
     "description": "WELCOME TO LEONIDA\r\n\r\nGrand Theft Auto VI heads to the state of Leonida, home to the neon-soaked streets of Vice City and beyond in the biggest, most immersive evolution of the Grand Theft Auto series..."
+  },
+  {
+    "slug": "the-dark-pictures-directive-8020",
+    "name": "Directive 8020",
+    "platforms": [
+      "PlayStation",
+      "PC"
+    ],
+    "releaseDate": "2026-06-30T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-06-30T00:00:00.000Z",
+      "PC": "2026-06-30T00:00:00.000Z"
+    },
+    "image": "/images/games/the-dark-pictures-directive-8020.jpg",
+    "description": "<p>Directive 8020 is an adventure game. The game is rated as \"Skip\" on RAWG. <br>You can play Directive 8020 on PlayStation 5, Xbox Series S/X and PC. <br>Will Doyle directed the game. Jason Graves sc..."
+  },
+  {
+    "slug": "beautiful-light",
+    "name": "Beautiful Light",
+    "platforms": [
+      "PC"
+    ],
+    "releaseDate": "2026-12-01T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PC": "2026-12-01T00:00:00.000Z"
+    },
+    "image": "/images/games/beautiful-light.jpg",
+    "description": "Beautiful Light, a PvPvPvE tactical first-person extraction shooter where 6 squads of 3 operators are tasked with entering, securing, and extracting an artifact in a hostile, horrific environment. Fac..."
+  },
+  {
+    "slug": "prince-of-persia-the-sands-of-time-remake",
+    "name": "Prince of Persia: The Sands of Time Remake",
+    "platforms": [
+      "PlayStation",
+      "PC",
+      "Xbox"
+    ],
+    "releaseDate": "2026-12-31T00:00:00.000Z",
+    "platformReleaseDates": {
+      "PlayStation": "2026-12-31T00:00:00.000Z",
+      "PC": "2026-12-31T00:00:00.000Z",
+      "Xbox": "2026-12-31T00:00:00.000Z"
+    },
+    "image": "/images/games/prince-of-persia-the-sands-of-time-remake.jpg",
+    "description": "The Prince has returned! Experience the classic tale that redefined action-adventure gaming in this full-scale remake for a new generation.\n\n- You are the Prince of Persia. Embark on a journey to save..."
   }
 ]

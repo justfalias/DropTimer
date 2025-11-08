@@ -1,0 +1,80 @@
+---
+import type { Game } from '@/types/Game';
+import PlatformTag from './PlatformTag.astro';
+import CountdownTimer from './CountdownTimer.astro';
+
+interface Props {
+  game: Game;
+}
+
+const { game } = Astro.props;
+---
+
+<a
+  href={`/${game.slug}`}
+  class="group flex items-center gap-6 p-4 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 card-hover"
+  data-astro-prefetch
+  data-game-slug={game.slug}
+>
+  <!-- Game Cover Image -->
+  <div class="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 overflow-hidden rounded-lg">
+    <img
+      src={game.image}
+      alt={`${game.name} cover`}
+      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-40"></div>
+  </div>
+
+  <!-- Game Info -->
+  <div class="flex-1 min-w-0">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <!-- Title -->
+        <h3 class="text-lg md:text-xl font-heading font-bold text-text-primary group-hover:text-neon-cyan transition-colors duration-200 truncate">
+          {game.name}
+        </h3>
+        
+        <!-- Platform Tags -->
+        <div class="flex flex-wrap gap-2 mt-2">
+          {game.platforms.map((platform) => (
+            <PlatformTag platform={platform} />
+          ))}
+        </div>
+      </div>
+
+      <!-- Countdown Timer -->
+      <div class="flex-shrink-0">
+        <CountdownTimer releaseDate={game.releaseDate} />
+      </div>
+    </div>
+
+    <!-- Release Date -->
+    <p class="text-sm text-text-secondary mt-2">
+      Release: {new Date(game.releaseDate).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}
+    </p>
+  </div>
+
+  <!-- Arrow Icon -->
+  <div class="flex-shrink-0 text-text-secondary group-hover:text-neon-cyan transition-colors duration-200">
+    <svg
+      class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 5l7 7-7 7"
+      />
+    </svg>
+  </div>
+</a>
+

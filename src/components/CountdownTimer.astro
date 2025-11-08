@@ -137,7 +137,48 @@ const sizeClasses = large
       }
 
       updateTimer();
-      setInterval(updateTimer, 1000);
+      const intervalId = setInterval(updateTimer, 1000);
+      
+      // Listen for timer updates (when platform changes)
+      window.addEventListener('updateTimer', (e: any) => {
+        if (e.detail && e.detail.releaseDate) {
+          const newTargetDate = new Date(e.detail.releaseDate).getTime();
+          const updateTimerWithNewDate = () => {
+            const now = new Date().getTime();
+            const difference = newTargetDate - now;
+
+            if (difference <= 0) {
+              if (expiredEl) {
+                expiredEl.style.display = 'block';
+              }
+              if (timerContainer) {
+                timerContainer.style.display = 'none';
+              }
+              return;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+            if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+            if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+            if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+            
+            if (expiredEl) expiredEl.style.display = 'none';
+            if (timerContainer) timerContainer.style.display = '';
+          };
+          
+          // Update immediately
+          updateTimerWithNewDate();
+          
+          // Clear old interval and set new one
+          clearInterval(intervalId);
+          setInterval(updateTimerWithNewDate, 1000);
+        }
+      });
     });
   }
 </script>

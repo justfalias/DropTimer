@@ -60,6 +60,23 @@ const GAMES_TO_FETCH = [
 ];
 
 /**
+ * Map RAWG platform names to our platform names
+ */
+function mapPlatform(rawgPlatform) {
+  const platformMap = {
+    'PC': 'PC',
+    'PlayStation 5': 'PlayStation',
+    'PlayStation 4': 'PlayStation',
+    'Xbox Series X/S': 'Xbox',
+    'Xbox One': 'Xbox',
+    'Nintendo Switch': 'Switch',
+    'Steam': 'Steam',
+  };
+  
+  return platformMap[rawgPlatform] || rawgPlatform;
+}
+
+/**
  * Fetch game data from RAWG API
  */
 async function fetchGameData(gameName) {
@@ -82,13 +99,43 @@ async function fetchGameData(gameName) {
       const detailResponse = await fetch(detailUrl);
       const detailData = await detailResponse.json();
       
+      // Extract platform-specific release dates
+      const platformReleaseDates = {};
+      const platforms = [];
+      
+      if (detailData.platforms && Array.isArray(detailData.platforms)) {
+        detailData.platforms.forEach(platformData => {
+          const platformName = platformData.platform.name;
+          const mappedPlatform = mapPlatform(platformName);
+          
+          if (['PC', 'PlayStation', 'Xbox', 'Switch', 'Steam'].includes(mappedPlatform)) {
+            if (!platforms.includes(mappedPlatform)) {
+              platforms.push(mappedPlatform);
+            }
+            
+            // Get platform-specific release date if available
+            const platformReleaseDate = platformData.released_at || detailData.released || game.released;
+            if (platformReleaseDate && (!platformReleaseDates[mappedPlatform] || platformReleaseDate < platformReleaseDates[mappedPlatform])) {
+              platformReleaseDates[mappedPlatform] = platformReleaseDate;
+            }
+          }
+        });
+      }
+      
+      // Fallback to general release date if no platforms found
+      const generalReleaseDate = detailData.released || game.released;
+      if (platforms.length === 0) {
+        platforms.push('PC'); // Default platform
+      }
+      
       return {
         name: game.name,
         slug: game.slug,
-        releaseDate: detailData.released || game.released,
+        releaseDate: generalReleaseDate,
+        platformReleaseDates: Object.keys(platformReleaseDates).length > 0 ? platformReleaseDates : undefined,
         image: game.background_image || detailData.background_image,
         description: detailData.description_raw || detailData.description || '',
-        platforms: detailData.platforms?.map(p => p.platform.name) || [],
+        platforms: platforms,
       };
     }
     
@@ -97,23 +144,6 @@ async function fetchGameData(gameName) {
     console.error(`Error fetching ${gameName}:`, error.message);
     return null;
   }
-}
-
-/**
- * Map RAWG platform names to our platform names
- */
-function mapPlatform(rawgPlatform) {
-  const platformMap = {
-    'PC': 'PC',
-    'PlayStation 5': 'PlayStation',
-    'PlayStation 4': 'PlayStation',
-    'Xbox Series X/S': 'Xbox',
-    'Xbox One': 'Xbox',
-    'Nintendo Switch': 'Switch',
-    'Steam': 'Steam',
-  };
-  
-  return platformMap[rawgPlatform] || rawgPlatform;
 }
 
 /**
@@ -166,17 +196,44 @@ async function convertToOurFormat(rawgData) {
     .filter((p, i, arr) => arr.indexOf(p) === i) // Remove duplicates
     .filter(p => ['PC', 'PlayStation', 'Xbox', 'Switch', 'Steam'].includes(p)); // Only our supported platforms
   
-  // Convert date format (RAWG uses YYYY-MM-DD, we need ISO with time)
+  // Convert general release date format (RAWG uses YYYY-MM-DD, we need ISO with time)
   const releaseDate = rawgData.releaseDate 
     ? new Date(rawgData.releaseDate + 'T00:00:00Z').toISOString()
     : null;
   
-  // Check if release date is in the future
-  const now = new Date();
-  const gameDate = releaseDate ? new Date(releaseDate) : null;
+  // Convert platform-specific release dates
+  const platformReleaseDates = {};
+  if (rawgData.platformReleaseDates) {
+    Object.keys(rawgData.platformReleaseDates).forEach(platform => {
+      const dateStr = rawgData.platformReleaseDates[platform];
+      if (dateStr) {
+        platformReleaseDates[platform] = new Date(dateStr + 'T00:00:00Z').toISOString();
+      }
+    });
+  }
   
-  // Skip games that are already released
-  if (gameDate && gameDate < now) {
+  // Check if any release date is in the future
+  const now = new Date();
+  let hasFutureDate = false;
+  
+  // Check general release date
+  if (releaseDate) {
+    const gameDate = new Date(releaseDate);
+    if (gameDate >= now) {
+      hasFutureDate = true;
+    }
+  }
+  
+  // Check platform-specific dates
+  if (!hasFutureDate && Object.keys(platformReleaseDates).length > 0) {
+    hasFutureDate = Object.values(platformReleaseDates).some(dateStr => {
+      const gameDate = new Date(dateStr);
+      return gameDate >= now;
+    });
+  }
+  
+  // Skip games that are already released on all platforms
+  if (!hasFutureDate) {
     return null; // Return null to skip this game
   }
   
@@ -188,9 +245,31 @@ async function convertToOurFormat(rawgData) {
     name: rawgData.name,
     platforms: platforms.length > 0 ? platforms : ['PC'], // Default to PC if no platforms match
     releaseDate: releaseDate || new Date('2025-12-31T00:00:00Z').toISOString(), // Default future date if no date
+    platformReleaseDates: Object.keys(platformReleaseDates).length > 0 ? platformReleaseDates : undefined,
     image: localImagePath || '/images/games/default.jpg', // Use local path
     description: rawgData.description.substring(0, 200) + '...', // Limit description length
   };
+}
+
+/**
+ * Fetch popular upcoming games from a specific date
+ */
+async function fetchUpcomingGames(fromDate = '2025-12-01', page = 1, pageSize = 20) {
+  try {
+    // Search for games releasing from the specified date onwards, ordered by popularity
+    const url = `https://api.rawg.io/api/games?dates=${fromDate},2026-12-31&ordering=-rating,-added&page_size=${pageSize}&page=${page}&key=${RAWG_API_KEY}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.results || [];
+  } catch (error) {
+    console.error(`Error fetching upcoming games:`, error.message);
+    return [];
+  }
 }
 
 /**
@@ -212,6 +291,72 @@ async function main() {
   
   const games = [];
   
+  // First, fetch popular upcoming games from December 2025 onwards
+  console.log('🔍 Searching for popular games releasing from December 2025...\n');
+  const upcomingGames = await fetchUpcomingGames('2025-12-01', 1, 30);
+  
+  if (upcomingGames.length > 0) {
+    console.log(`Found ${upcomingGames.length} upcoming games. Processing...\n`);
+    
+    for (const game of upcomingGames) {
+      console.log(`Fetching details for: ${game.name}...`);
+      
+      // Get detailed game info
+      const detailUrl = `https://api.rawg.io/api/games/${game.id}?key=${RAWG_API_KEY}`;
+      const detailResponse = await fetch(detailUrl);
+      const detailData = await detailResponse.json();
+      
+      // Extract platform-specific release dates
+      const platformReleaseDates = {};
+      const platforms = [];
+      
+      if (detailData.platforms && Array.isArray(detailData.platforms)) {
+        detailData.platforms.forEach(platformData => {
+          const platformName = platformData.platform.name;
+          const mappedPlatform = mapPlatform(platformName);
+          
+          if (['PC', 'PlayStation', 'Xbox', 'Switch', 'Steam'].includes(mappedPlatform)) {
+            if (!platforms.includes(mappedPlatform)) {
+              platforms.push(mappedPlatform);
+            }
+            
+            const platformReleaseDate = platformData.released_at || detailData.released || game.released;
+            if (platformReleaseDate && (!platformReleaseDates[mappedPlatform] || platformReleaseDate < platformReleaseDates[mappedPlatform])) {
+              platformReleaseDates[mappedPlatform] = platformReleaseDate;
+            }
+          }
+        });
+      }
+      
+      const generalReleaseDate = detailData.released || game.released;
+      if (platforms.length === 0) {
+        platforms.push('PC');
+      }
+      
+      const rawgData = {
+        name: game.name,
+        slug: game.slug,
+        releaseDate: generalReleaseDate,
+        platformReleaseDates: Object.keys(platformReleaseDates).length > 0 ? platformReleaseDates : undefined,
+        image: game.background_image || detailData.background_image,
+        description: detailData.description_raw || detailData.description || '',
+        platforms: platforms,
+      };
+      
+      const converted = await convertToOurFormat(rawgData);
+      if (converted) {
+        games.push(converted);
+        console.log(`✅ Added: ${converted.name} - Release: ${converted.releaseDate}`);
+      } else {
+        console.log(`⏭️  Skipped: ${game.name} (already released or invalid date)`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  
+  // Also fetch manually specified games
+  console.log('\n📋 Fetching manually specified games...\n');
   for (const gameName of GAMES_TO_FETCH) {
     console.log(`Fetching: ${gameName}...`);
     const rawgData = await fetchGameData(gameName);

@@ -14,8 +14,10 @@ export interface Game {
   name: string;
   /** List of platforms where the game will be released */
   platforms: Platform[];
-  /** ISO 8601 date string for the release date */
+  /** ISO 8601 date string for the release date (fallback if no platform-specific dates) */
   releaseDate: string;
+  /** Platform-specific release dates (optional) */
+  platformReleaseDates?: Record<Platform, string>;
   /** URL or path to the game's cover image */
   image: string;
   /** Short description of the game */

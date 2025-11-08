@@ -1,7 +1,7 @@
 ---
 import MainLayout from '@/components/MainLayout.astro';
 import GameCard from '@/components/GameCard.astro';
-import CountdownTimer from '@/components/CountdownTimer.astro';
+import GameListItem from '@/components/GameListItem.astro';
 import type { Game } from '@/types/Game';
 import gamesData from '@/data/games.json';
 
@@ -12,50 +12,107 @@ const games: Game[] = gamesData as Game[];
 const sortedGames = [...games].sort((a, b) => {
   return new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime();
 });
-
-// Get the next upcoming game (first in sorted list)
-const nextGame = sortedGames[0];
 ---
 
 <MainLayout title="DropTimer.gg - Track Upcoming Game Releases">
-  <!-- Hero Section with Next Game -->
-  {nextGame && (
-    <section class="relative min-h-[60vh] flex items-center justify-center px-4 py-12 md:py-16 overflow-hidden">
-      <!-- Background Image -->
-      <div class="absolute inset-0 z-0">
-        <img
-          src={nextGame.image}
-          alt={`${nextGame.name} cover`}
-          class="w-full h-full object-cover opacity-20 blur-3xl scale-110"
-          loading="eager"
+  <!-- Hero Search Section -->
+  <section class="container mx-auto px-4 py-12 md:py-16">
+    <div class="max-w-4xl mx-auto text-center mb-12">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold gradient-text mb-6 animate-fade-in">
+        DropTimer<span class="text-neon-cyan">.gg</span>
+      </h1>
+      <p class="text-lg md:text-xl text-text-secondary mb-8 animate-fade-in" style="animation-delay: 0.1s;">
+        Track countdowns for all upcoming game releases
+      </p>
+
+      <!-- Main Search Input with Autocomplete -->
+      <div class="relative max-w-2xl mx-auto mb-6 animate-fade-in" style="animation-delay: 0.2s;">
+        <input
+          type="text"
+          id="main-search-input"
+          placeholder="Search games..."
+          autocomplete="off"
+          class="w-full px-6 py-4 pl-14 text-lg bg-dark-card border-2 border-dark-card-hover rounded-lg text-text-primary placeholder-text-secondary focus:outline-none focus:border-neon-cyan transition-all duration-200"
         />
-        <div class="absolute inset-0 bg-gradient-to-b from-dark-bg via-dark-bg/80 to-dark-bg"></div>
+        <!-- Autocomplete Dropdown -->
+        <div id="autocomplete-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-dark-card border-2 border-dark-card-hover rounded-lg shadow-xl z-50 max-h-64 overflow-y-auto">
+        </div>
+        <svg
+          class="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-text-secondary"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <button
+          id="main-clear-search"
+          class="absolute right-5 top-1/2 -translate-y-1/2 hidden text-text-secondary hover:text-neon-cyan transition-colors"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
-      <!-- Content -->
-      <div class="container mx-auto relative z-10 text-center">
-        <p class="text-sm md:text-base text-text-secondary uppercase tracking-wider mb-4 animate-fade-in">
-          Next Release
-        </p>
-        <h2 class="text-3xl md:text-5xl lg:text-6xl font-heading font-bold gradient-text mb-8 animate-fade-in" style="animation-delay: 0.1s;">
-          {nextGame.name}
-        </h2>
-        
-        <!-- Large Countdown Timer -->
-        <div class="mb-8 animate-fade-in" style="animation-delay: 0.2s;">
-          <CountdownTimer releaseDate={nextGame.releaseDate} large={true} />
+      <!-- Platform Filters -->
+      <div class="mb-6 animate-fade-in" style="animation-delay: 0.3s;">
+        <p class="text-sm text-text-secondary mb-3 text-center">Filter by Platform:</p>
+        <div class="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto">
+          <button
+            class="platform-filter-btn-home px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm font-medium"
+            data-platform=""
+          >
+            All Platforms
+          </button>
+          <button
+            class="platform-filter-btn-home px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm font-medium"
+            data-platform="PC"
+          >
+            PC
+          </button>
+          <button
+            class="platform-filter-btn-home px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm font-medium"
+            data-platform="PlayStation"
+          >
+            PlayStation
+          </button>
+          <button
+            class="platform-filter-btn-home px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm font-medium"
+            data-platform="Xbox"
+          >
+            Xbox
+          </button>
+          <button
+            class="platform-filter-btn-home px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm font-medium"
+            data-platform="Switch"
+          >
+            Switch
+          </button>
+          <button
+            class="platform-filter-btn-home px-4 py-2 rounded-lg bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover text-text-secondary hover:text-neon-cyan transition-all duration-200 text-sm font-medium"
+            data-platform="Steam"
+          >
+            Steam
+          </button>
         </div>
+      </div>
 
-        <!-- View Game Button -->
-        <a
-          href={`/game/${nextGame.slug}`}
-          class="inline-flex items-center gap-2 px-6 py-3 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-primary hover:text-neon-cyan group animate-fade-in"
-          style="animation-delay: 0.3s;"
-          data-astro-prefetch
+      <!-- Filters and View Toggle -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto animate-fade-in" style="animation-delay: 0.4s;">
+        <!-- Favorites Filter -->
+        <button
+          id="favorites-filter-btn"
+          class="flex items-center gap-2 px-4 py-2 bg-dark-card hover:bg-dark-card-hover border border-dark-card-hover rounded-lg transition-all duration-200 text-text-secondary hover:text-neon-cyan"
         >
-          View Details
           <svg
-            class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200"
+            id="favorites-filter-icon"
+            class="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -64,51 +121,103 @@ const nextGame = sortedGames[0];
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M9 5l7 7-7 7"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
             />
           </svg>
-        </a>
-      </div>
-    </section>
-  )}
+          <span id="favorites-filter-text">Show Favorites</span>
+        </button>
 
-  <!-- Favorites Section (if any) -->
-  <section id="favorites-section" class="container mx-auto px-4 py-12 md:py-16 hidden">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-heading font-bold gradient-text mb-4">
-        Your Favorites
-      </h2>
-      <p class="text-lg text-text-secondary max-w-2xl mx-auto">
-        Your saved game countdowns
-      </p>
+        <!-- View Toggle -->
+        <div class="flex items-center gap-2 bg-dark-card border border-dark-card-hover rounded-lg p-1">
+          <button
+            id="view-grid-btn"
+            class="p-2 rounded transition-colors duration-200"
+            title="Grid View"
+          >
+            <svg class="w-5 h-5 text-neon-cyan" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
+            </svg>
+          </button>
+          <button
+            id="view-list-btn"
+            class="p-2 rounded transition-colors duration-200 text-text-secondary hover:text-neon-cyan"
+            title="List View"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
-    <div id="favorites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
-  <!-- All Games Section -->
-  <section class="container mx-auto px-4 py-12 md:py-16">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-heading font-bold gradient-text mb-4">
-        All Upcoming Releases
-      </h2>
-      <p class="text-lg text-text-secondary max-w-2xl mx-auto">
-        Track countdowns for all upcoming game releases
+  <!-- Games Section -->
+  <section id="games-section" class="container mx-auto px-4 pb-12 md:pb-16">
+    <!-- Results Count -->
+    <div id="results-count" class="mb-6 text-center">
+      <p class="text-text-secondary">
+        <span id="results-number">{sortedGames.length}</span> game{sortedGames.length !== 1 ? 's' : ''} found
       </p>
     </div>
 
-    <!-- Games Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {sortedGames.map((game, index) => (
-        <div
-          class="animate-slide-up"
-          style={`animation-delay: ${index * 0.1}s; animation-fill-mode: both;`}
-        >
-          <GameCard game={game} />
-        </div>
-      ))}
+    <!-- Games Container -->
+    <div id="games-container">
+      <!-- Grid View -->
+      <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedGames.map((game, index) => (
+          <div
+            class="animate-slide-up"
+            style={`animation-delay: ${index * 0.1}s; animation-fill-mode: both;`}
+            data-game-name={game.name.toLowerCase()}
+            data-game-slug={game.slug}
+            data-platforms={game.platforms.join(',')}
+          >
+            <GameCard game={game} />
+          </div>
+        ))}
+      </div>
+
+      <!-- List View -->
+      <div id="games-list" class="hidden space-y-4">
+        {sortedGames.map((game, index) => (
+          <div
+            class="animate-slide-up"
+            style={`animation-delay: ${index * 0.05}s; animation-fill-mode: both;`}
+            data-game-name={game.name.toLowerCase()}
+            data-game-slug={game.slug}
+            data-platforms={game.platforms.join(',')}
+          >
+            <GameListItem game={game} />
+          </div>
+        ))}
+      </div>
     </div>
 
     <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-16">
+      <svg
+        class="w-16 h-16 mx-auto mb-4 text-text-secondary"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="text-text-secondary text-lg">No games found matching your search.</p>
+      <button
+        id="clear-filters-btn"
+        class="mt-4 text-neon-cyan hover:text-neon-purple transition-colors"
+      >
+        Clear filters
+      </button>
+    </div>
+
     {sortedGames.length === 0 && (
       <div class="text-center py-16">
         <p class="text-text-secondary text-lg">No upcoming games found.</p>
@@ -117,11 +226,11 @@ const nextGame = sortedGames[0];
   </section>
 </MainLayout>
 
-<script define:vars={{ games: JSON.stringify(sortedGames) }}>
-  // Load and display favorites on homepage
+<script define:vars={{ games: JSON.stringify(sortedGames), gamesData: JSON.stringify(games) }}>
   if (typeof window !== 'undefined') {
     const allGames = JSON.parse(games);
     
+    // Load favorites from localStorage
     function loadFavorites() {
       try {
         const favorites = JSON.parse(localStorage.getItem('droptimer-favorites') || '[]');
@@ -131,66 +240,426 @@ const nextGame = sortedGames[0];
       }
     }
 
-    function displayFavorites() {
-      const favorites = loadFavorites();
-      const favoritesSection = document.getElementById('favorites-section');
-      const favoritesGrid = document.getElementById('favorites-grid');
+    // View Toggle Functionality
+    function initViewToggle() {
+      const gridBtn = document.getElementById('view-grid-btn');
+      const listBtn = document.getElementById('view-list-btn');
+      const gridView = document.getElementById('games-grid');
+      const listView = document.getElementById('games-list');
       
-      if (!favoritesSection || !favoritesGrid) return;
+      if (!gridBtn || !listBtn || !gridView || !listView) return;
+
+      const savedView = localStorage.getItem('droptimer-view') || 'grid';
       
-      if (favorites.size === 0) {
-        favoritesSection.classList.add('hidden');
-        return;
+      function setView(view) {
+        if (view === 'grid') {
+          gridView.classList.remove('hidden');
+          listView.classList.add('hidden');
+          gridBtn.classList.add('text-neon-cyan');
+          gridBtn.classList.remove('text-text-secondary');
+          listBtn.classList.remove('text-neon-cyan');
+          listBtn.classList.add('text-text-secondary');
+        } else {
+          gridView.classList.add('hidden');
+          listView.classList.remove('hidden');
+          listBtn.classList.add('text-neon-cyan');
+          listBtn.classList.remove('text-text-secondary');
+          gridBtn.classList.remove('text-neon-cyan');
+          gridBtn.classList.add('text-text-secondary');
+        }
+        localStorage.setItem('droptimer-view', view);
       }
-      
-      // Show favorites section
-      favoritesSection.classList.remove('hidden');
-      
-      // Filter games that are favorited
-      const favoriteGames = allGames.filter(game => favorites.has(game.slug));
-      
-      if (favoriteGames.length === 0) {
-        favoritesGrid.innerHTML = '<p class="text-text-secondary col-span-full text-center py-8">No favorite games yet. Click the heart icon on any game to add it to favorites!</p>';
-        return;
-      }
-      
-      // Render favorite games (simplified version)
-      favoritesGrid.innerHTML = favoriteGames.map(game => {
-        const releaseDate = new Date(game.releaseDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        
-        return `
-          <a href="/game/${game.slug}" class="group block card-hover" data-astro-prefetch>
-            <div class="relative overflow-hidden rounded-lg bg-dark-card border border-dark-card-hover">
-              <div class="relative h-64 overflow-hidden">
-                <img src="${game.image}" alt="${game.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>
-                <div class="absolute top-4 right-4">
-                  <svg class="w-6 h-6 fill-neon-cyan text-neon-cyan" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </div>
-              </div>
-              <div class="p-4 space-y-3">
-                <h3 class="text-lg font-heading font-bold text-text-primary group-hover:text-neon-cyan transition-colors">${game.name}</h3>
-                <p class="text-sm text-text-secondary">Release: ${releaseDate}</p>
-              </div>
-            </div>
-          </a>
-        `;
-      }).join('');
+
+      setView(savedView);
+      gridBtn.addEventListener('click', () => setView('grid'));
+      listBtn.addEventListener('click', () => setView('list'));
     }
 
-    // Display favorites on load
-    displayFavorites();
-    
-    // Listen for storage changes (when favorites are updated on other pages)
-    window.addEventListener('storage', displayFavorites);
-    
-    // Also check periodically (for same-tab updates)
-    setInterval(displayFavorites, 1000);
+    // Favorites Filter Functionality
+    function initFavoritesFilter() {
+      const filterBtn = document.getElementById('favorites-filter-btn');
+      const filterIcon = document.getElementById('favorites-filter-icon');
+      const filterText = document.getElementById('favorites-filter-text');
+      
+      if (!filterBtn || !filterIcon || !filterText) return;
+
+      let showFavoritesOnly = false;
+
+      function updateFilterState(active) {
+        if (active) {
+          filterBtn.classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+          filterIcon.classList.add('fill-neon-cyan');
+          filterText.textContent = 'Showing Favorites';
+        } else {
+          filterBtn.classList.remove('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+          filterIcon.classList.remove('fill-neon-cyan');
+          filterText.textContent = 'Show Favorites';
+        }
+      }
+
+      filterBtn.addEventListener('click', () => {
+        showFavoritesOnly = !showFavoritesOnly;
+        updateFilterState(showFavoritesOnly);
+        filterGames();
+      });
+
+      // Expose to filter function
+      window.showFavoritesOnly = () => showFavoritesOnly;
+      window.setShowFavoritesOnly = (value) => {
+        showFavoritesOnly = value;
+        updateFilterState(showFavoritesOnly);
+      };
+    }
+
+    // Platform Filter Buttons on Home Page
+    function initPlatformFiltersHome() {
+      const platformButtons = document.querySelectorAll('.platform-filter-btn-home');
+      let activePlatformBtn = null;
+
+      // Set "All Platforms" as active by default
+      platformButtons.forEach(btn => {
+        if (btn.getAttribute('data-platform') === '') {
+          btn.classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+          activePlatformBtn = btn;
+        }
+      });
+
+      platformButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const platform = btn.getAttribute('data-platform');
+          
+          // Update active button
+          platformButtons.forEach(b => {
+            b.classList.remove('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+            b.classList.add('bg-dark-card', 'border-dark-card-hover', 'text-text-secondary');
+          });
+          btn.classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+          btn.classList.remove('bg-dark-card', 'border-dark-card-hover', 'text-text-secondary');
+          
+          // Store in sessionStorage
+          if (platform) {
+            sessionStorage.setItem('droptimer-active-platform', platform);
+          } else {
+            sessionStorage.removeItem('droptimer-active-platform');
+          }
+          
+          // Trigger filter update
+          filterGames();
+        });
+      });
+
+      // Check for active platform on page load
+      const savedPlatform = sessionStorage.getItem('droptimer-active-platform');
+      if (savedPlatform) {
+        platformButtons.forEach(btn => {
+          if (btn.getAttribute('data-platform') === savedPlatform) {
+            btn.click();
+          }
+        });
+      }
+      
+      // Listen for platform filter events from header
+      window.addEventListener('platformFilter', (e: any) => {
+        const platform = e.detail?.platform;
+        if (platform) {
+          // Find and click the corresponding button
+          platformButtons.forEach(btn => {
+            if (btn.getAttribute('data-platform') === platform) {
+              btn.click();
+            }
+          });
+        } else {
+          // Clear filter
+          platformButtons.forEach(btn => {
+            if (btn.getAttribute('data-platform') === '') {
+              btn.click();
+            }
+          });
+        }
+      });
+    }
+
+    // Autocomplete functionality
+    function initAutocomplete() {
+      const searchInput = document.getElementById('main-search-input');
+      const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+      const games = JSON.parse(gamesData);
+      
+      if (!searchInput || !autocompleteDropdown) return;
+      
+      let selectedIndex = -1;
+      let filteredGames: any[] = [];
+      
+      function showAutocomplete(matches: any[]) {
+        filteredGames = matches;
+        if (matches.length === 0 || searchInput.value.trim() === '') {
+          autocompleteDropdown.classList.add('hidden');
+          return;
+        }
+        
+        autocompleteDropdown.innerHTML = '';
+        matches.slice(0, 5).forEach((game, index) => {
+          const item = document.createElement('div');
+          item.className = `px-4 py-3 cursor-pointer hover:bg-dark-card-hover transition-colors ${index === selectedIndex ? 'bg-dark-card-hover' : ''}`;
+          item.innerHTML = `
+            <div class="font-medium text-text-primary">${game.name}</div>
+            <div class="text-sm text-text-secondary">${game.platforms.join(', ')}</div>
+          `;
+          item.addEventListener('click', () => {
+            searchInput.value = game.name;
+            autocompleteDropdown.classList.add('hidden');
+            filterGames();
+          });
+          autocompleteDropdown.appendChild(item);
+        });
+        
+        autocompleteDropdown.classList.remove('hidden');
+      }
+      
+      function hideAutocomplete() {
+        setTimeout(() => {
+          autocompleteDropdown.classList.add('hidden');
+        }, 200);
+      }
+      
+      searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase().trim();
+        if (term.length < 2) {
+          autocompleteDropdown.classList.add('hidden');
+          filterGames();
+          return;
+        }
+        
+        const matches = games.filter((game: any) => 
+          game.name.toLowerCase().includes(term)
+        );
+        
+        selectedIndex = -1;
+        showAutocomplete(matches);
+        filterGames();
+      });
+      
+      searchInput.addEventListener('keydown', (e) => {
+        if (!autocompleteDropdown.classList.contains('hidden') && filteredGames.length > 0) {
+          const items = autocompleteDropdown.querySelectorAll('div');
+          
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+            items.forEach((item, i) => {
+              if (i === selectedIndex) {
+                item.classList.add('bg-dark-card-hover');
+              } else {
+                item.classList.remove('bg-dark-card-hover');
+              }
+            });
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, -1);
+            items.forEach((item, i) => {
+              if (i === selectedIndex) {
+                item.classList.add('bg-dark-card-hover');
+              } else {
+                item.classList.remove('bg-dark-card-hover');
+              }
+            });
+          } else if (e.key === 'Enter' && selectedIndex >= 0) {
+            e.preventDefault();
+            const selectedGame = filteredGames[selectedIndex];
+            if (selectedGame) {
+              searchInput.value = selectedGame.name;
+              autocompleteDropdown.classList.add('hidden');
+              filterGames();
+            }
+          } else if (e.key === 'Escape') {
+            autocompleteDropdown.classList.add('hidden');
+          }
+        }
+      });
+      
+      // Hide autocomplete when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target as Node) && !autocompleteDropdown.contains(e.target as Node)) {
+          hideAutocomplete();
+        }
+      });
+    }
+
+    // Search and Filter Functionality
+    function initSearchAndFilter() {
+      const searchInput = document.getElementById('main-search-input');
+      const clearBtn = document.getElementById('main-clear-search');
+      const gridView = document.getElementById('games-grid');
+      const listView = document.getElementById('games-list');
+      const emptyState = document.getElementById('empty-state');
+      const resultsCount = document.getElementById('results-number');
+      const clearFiltersBtn = document.getElementById('clear-filters-btn');
+      
+      if (!searchInput || !clearBtn || !gridView || !listView || !emptyState || !resultsCount) return;
+
+      function filterGames() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const showFavorites = window.showFavoritesOnly ? window.showFavoritesOnly() : false;
+        const favorites = showFavorites ? loadFavorites() : null;
+        const activePlatform = sessionStorage.getItem('droptimer-active-platform');
+        
+        const gridItems = gridView.querySelectorAll('[data-game-name]');
+        const listItems = listView.querySelectorAll('[data-game-name]');
+        
+        let visibleCount = 0;
+
+        // Filter function
+        function shouldShow(item) {
+          const gameName = item.getAttribute('data-game-name') || '';
+          const gameSlug = item.getAttribute('data-game-slug') || '';
+          const gamePlatforms = item.getAttribute('data-platforms') || '';
+          
+          // Search filter
+          const matchesSearch = gameName.includes(searchTerm);
+          
+          // Favorites filter
+          const matchesFavorites = !showFavorites || (favorites && favorites.has(gameSlug));
+          
+          // Platform filter
+          const matchesPlatform = !activePlatform || gamePlatforms.includes(activePlatform);
+          
+          return matchesSearch && matchesFavorites && matchesPlatform;
+        }
+
+        // Filter grid items
+        gridItems.forEach(item => {
+          if (shouldShow(item)) {
+            item.style.display = '';
+            visibleCount++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        // Filter list items
+        listItems.forEach(item => {
+          if (shouldShow(item)) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        // Update results count
+        resultsCount.textContent = visibleCount;
+
+        // Show/hide empty state
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+          gridView.classList.add('hidden');
+          listView.classList.add('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+
+        // Show/hide clear button
+        const activePlatform = sessionStorage.getItem('droptimer-active-platform');
+        if (searchTerm !== '' || showFavorites || activePlatform) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+
+      // Listen for platform filter changes from header
+      window.addEventListener('platformFilter', (e) => {
+        filterGames();
+      });
+
+      searchInput.addEventListener('input', () => {
+        filterGames();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        if (window.setShowFavoritesOnly) {
+          window.setShowFavoritesOnly(false);
+        }
+        sessionStorage.removeItem('droptimer-active-platform');
+        // Reset platform buttons in header
+        document.querySelectorAll('.platform-filter-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        // Reset platform buttons on home page
+        document.querySelectorAll('.platform-filter-btn-home').forEach(btn => {
+          if (btn.getAttribute('data-platform') === '') {
+            btn.classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+          } else {
+            btn.classList.remove('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+            btn.classList.add('bg-dark-card', 'border-dark-card-hover', 'text-text-secondary');
+          }
+        });
+        filterGames();
+        searchInput.focus();
+      });
+
+      if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          if (window.setShowFavoritesOnly) {
+            window.setShowFavoritesOnly(false);
+          }
+          sessionStorage.removeItem('droptimer-active-platform');
+          // Reset platform buttons in header
+          document.querySelectorAll('.platform-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          // Reset platform buttons on home page
+          document.querySelectorAll('.platform-filter-btn-home').forEach(btn => {
+            if (btn.getAttribute('data-platform') === '') {
+              btn.classList.add('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+            } else {
+              btn.classList.remove('bg-neon-cyan/20', 'border-neon-cyan', 'text-neon-cyan');
+              btn.classList.add('bg-dark-card', 'border-dark-card-hover', 'text-text-secondary');
+            }
+          });
+          filterGames();
+          searchInput.focus();
+        });
+      }
+
+      // Listen for favorites changes
+      window.addEventListener('storage', () => {
+        filterGames();
+      });
+
+      // Check URL for platform parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const platformParam = urlParams.get('platform');
+      if (platformParam) {
+        sessionStorage.setItem('droptimer-active-platform', platformParam);
+        // Trigger platform filter
+        document.querySelectorAll('.platform-filter-btn').forEach(btn => {
+          if (btn.getAttribute('data-platform') === platformParam) {
+            btn.click();
+          }
+        });
+      }
+
+      // Initial filter
+      filterGames();
+    }
+
+    // Initialize everything
+    initViewToggle();
+    initFavoritesFilter();
+    initPlatformFiltersHome();
+    initAutocomplete();
+    initSearchAndFilter();
+
+    // Update filters when favorites change (same tab)
+    setInterval(() => {
+      const searchInput = document.getElementById('main-search-input');
+      if (searchInput) {
+        const event = new Event('input');
+        searchInput.dispatchEvent(event);
+      }
+    }, 1000);
   }
 </script>
