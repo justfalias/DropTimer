@@ -1,0 +1,115 @@
+---
+import MainLayout from '@/components/MainLayout.astro';
+import PlatformTag from '@/components/PlatformTag.astro';
+import CountdownTimer from '@/components/CountdownTimer.astro';
+import type { Game } from '@/types/Game';
+import gamesData from '@/data/games.json';
+
+// Export getStaticPaths to tell Astro which slugs to pre-render
+// This is required for dynamic routes in Astro
+export async function getStaticPaths() {
+  const games: Game[] = gamesData as Game[];
+  
+  // Return an array of objects with the slug parameter for each game
+  return games.map((game) => ({
+    params: { slug: game.slug },
+    props: { game }, // Pass the game data as props for convenience
+  }));
+}
+
+// Get the slug from the URL params
+const { slug } = Astro.params;
+
+// Get the game from props (passed by getStaticPaths) or find it by slug
+const game = Astro.props.game || (gamesData as Game[]).find((g) => g.slug === slug);
+
+// If game not found, return 404
+if (!game) {
+  return Astro.redirect('/404');
+}
+
+// Format release date for display
+const releaseDateFormatted = new Date(game.releaseDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+---
+
+<MainLayout title={`${game.name} - DropTimer.gg`} description={game.description}>
+  <article class="container mx-auto px-4 py-8 md:py-12">
+    <!-- Back Button -->
+    <a
+      href="/"
+      class="inline-flex items-center gap-2 text-text-secondary hover:text-neon-cyan transition-colors duration-200 mb-8 group"
+      data-astro-prefetch
+    >
+      <svg
+        class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+      Back to Games
+    </a>
+
+    <!-- Game Details -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+      <!-- Cover Image -->
+      <div class="relative rounded-lg overflow-hidden border border-dark-card-hover glow-effect">
+        <img
+          src={game.image}
+          alt={`${game.name} cover`}
+          class="w-full h-auto object-cover"
+          loading="eager"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-dark-bg/80 to-transparent pointer-events-none"></div>
+      </div>
+
+      <!-- Game Info -->
+      <div class="space-y-6">
+        <!-- Title -->
+        <h1 class="text-3xl md:text-4xl font-heading font-bold gradient-text">
+          {game.name}
+        </h1>
+
+        <!-- Description -->
+        <p class="text-lg text-text-primary leading-relaxed">
+          {game.description}
+        </p>
+
+        <!-- Countdown Timer -->
+        <div class="bg-dark-card rounded-lg p-6 border border-dark-card-hover">
+          <h2 class="text-sm uppercase tracking-wider text-text-secondary mb-4">Time Until Release</h2>
+          <CountdownTimer releaseDate={game.releaseDate} />
+        </div>
+
+        <!-- Release Date -->
+        <div class="space-y-2">
+          <h2 class="text-sm uppercase tracking-wider text-text-secondary">Release Date</h2>
+          <p class="text-xl font-mono text-neon-cyan">{releaseDateFormatted}</p>
+        </div>
+
+        <!-- Platforms -->
+        <div class="space-y-3">
+          <h2 class="text-sm uppercase tracking-wider text-text-secondary">Available On</h2>
+          <div class="flex flex-wrap gap-3">
+            {game.platforms.map((platform) => (
+              <PlatformTag platform={platform} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</MainLayout>
+

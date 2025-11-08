@@ -1,0 +1,103 @@
+/* Import Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Base styles for dark gamer theme */
+@layer base {
+  html {
+    @apply bg-dark-bg text-text-primary;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-body antialiased;
+    /* Dark gradient background */
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
+    min-height: 100vh;
+  }
+
+  /* Custom scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-surface;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-dark-card rounded-full;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-dark-card-hover;
+  }
+
+  /* Selection styling */
+  ::selection {
+    @apply bg-neon-cyan/30 text-text-primary;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Gradient text effect */
+  .gradient-text {
+    @apply bg-gradient-to-r from-neon-cyan to-neon-purple bg-clip-text text-transparent;
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .card-hover:hover {
+    @apply transform scale-[1.02] shadow-neon-cyan;
+  }
+
+  /* Glow effect for interactive elements */
+  .glow-effect {
+    @apply transition-shadow duration-300;
+  }
+
+  .glow-effect:hover {
+    @apply shadow-neon-cyan;
+  }
+}
+
+/* View Transitions animations */
+@layer utilities {
+  /* Fade transition for page changes */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+  }
+
+  /* Smooth fade in/out */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+

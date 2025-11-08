@@ -1,0 +1,66 @@
+---
+import type { Game } from '@/types/Game';
+import PlatformTag from './PlatformTag.astro';
+import CountdownTimer from './CountdownTimer.astro';
+
+interface Props {
+  game: Game;
+}
+
+const { game } = Astro.props;
+---
+
+<a
+  href={`/game/${game.slug}`}
+  class="group block card-hover"
+  data-astro-prefetch
+>
+  <div class="relative overflow-hidden rounded-lg bg-dark-card border border-dark-card-hover">
+    <!-- Game Cover Image -->
+    <div class="relative h-64 overflow-hidden">
+      <img
+        src={game.image}
+        alt={`${game.name} cover`}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        loading="lazy"
+      />
+      <!-- Gradient overlay for better text readability -->
+      <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>
+      
+      <!-- Countdown Timer Overlay -->
+      <div class="absolute bottom-4 left-4 right-4">
+        <CountdownTimer releaseDate={game.releaseDate} />
+      </div>
+    </div>
+
+    <!-- Game Info -->
+    <div class="p-4 space-y-3">
+      <!-- Title -->
+      <h3 class="text-lg font-heading font-bold text-text-primary group-hover:text-neon-cyan transition-colors duration-200">
+        {game.name}
+      </h3>
+
+      <!-- Platform Tags -->
+      <div class="flex flex-wrap gap-2">
+        {game.platforms.map((platform) => (
+          <PlatformTag platform={platform} />
+        ))}
+      </div>
+
+      <!-- Release Date -->
+      <p class="text-sm text-text-secondary">
+        Release: {new Date(game.releaseDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </p>
+    </div>
+
+    <!-- Hover glow effect -->
+    <div class="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+      <div class="absolute inset-0 rounded-lg border-2 border-neon-cyan/50 shadow-neon-cyan"></div>
+    </div>
+  </div>
+</a>
+

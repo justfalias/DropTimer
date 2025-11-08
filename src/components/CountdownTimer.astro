@@ -1,0 +1,132 @@
+---
+interface Props {
+  releaseDate: string;
+}
+
+const { releaseDate } = Astro.props;
+
+// Calculate time remaining until release
+function getTimeRemaining(targetDate: string) {
+  const now = new Date().getTime();
+  const target = new Date(targetDate).getTime();
+  const difference = target - now;
+
+  if (difference <= 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      isExpired: true,
+    };
+  }
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+    minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+    seconds: Math.floor((difference % (1000 * 60)) / 1000),
+    isExpired: false,
+  };
+}
+
+const timeRemaining = getTimeRemaining(releaseDate);
+---
+
+<div class="countdown-timer" data-release-date={releaseDate}>
+  {timeRemaining.isExpired ? (
+    <div data-expired class="text-neon-cyan font-mono text-lg font-semibold">Released!</div>
+  ) : (
+    <div data-timer-container class="flex gap-4 items-center">
+      <!-- Days -->
+      <div class="flex flex-col items-center">
+        <span data-days class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+          {String(timeRemaining.days).padStart(2, '0')}
+        </span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider">Days</span>
+      </div>
+      <span class="text-neon-cyan font-mono text-xl">:</span>
+      <!-- Hours -->
+      <div class="flex flex-col items-center">
+        <span data-hours class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+          {String(timeRemaining.hours).padStart(2, '0')}
+        </span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider">Hours</span>
+      </div>
+      <span class="text-neon-cyan font-mono text-xl">:</span>
+      <!-- Minutes -->
+      <div class="flex flex-col items-center">
+        <span data-minutes class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+          {String(timeRemaining.minutes).padStart(2, '0')}
+        </span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider">Min</span>
+      </div>
+      <span class="text-neon-cyan font-mono text-xl">:</span>
+      <!-- Seconds -->
+      <div class="flex flex-col items-center">
+        <span data-seconds class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+          {String(timeRemaining.seconds).padStart(2, '0')}
+        </span>
+        <span class="text-xs text-text-secondary uppercase tracking-wider">Sec</span>
+      </div>
+    </div>
+  )}
+</div>
+
+<script define:vars={{ releaseDate }}>
+  // Client-side script to update countdown every second
+  if (typeof window !== 'undefined') {
+    // Find all countdown timers on the page
+    const timerElements = document.querySelectorAll('.countdown-timer');
+    
+    timerElements.forEach((element) => {
+      const releaseDateAttr = element.getAttribute('data-release-date');
+      if (!releaseDateAttr) return;
+      
+      const targetDate = new Date(releaseDateAttr).getTime();
+      const timerContainer = element.querySelector('[data-timer-container]');
+      const expiredEl = element.querySelector('[data-expired]');
+      const daysEl = element.querySelector('[data-days]');
+      const hoursEl = element.querySelector('[data-hours]');
+      const minutesEl = element.querySelector('[data-minutes]');
+      const secondsEl = element.querySelector('[data-seconds]');
+
+      // If already expired on initial load, don't set up timer
+      if (expiredEl && expiredEl.offsetParent !== null) {
+        return;
+      }
+
+      function updateTimer() {
+        const now = new Date().getTime();
+        const difference = targetDate - now;
+
+        if (difference <= 0) {
+          // Show expired message and hide timer
+          if (expiredEl) {
+            expiredEl.style.display = 'block';
+          }
+          if (timerContainer) {
+            timerContainer.style.display = 'none';
+          }
+          return;
+        }
+
+        // Update timer values
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+        if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+        if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+        if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+      }
+
+      // Update immediately and then every second
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    });
+  }
+</script>
+

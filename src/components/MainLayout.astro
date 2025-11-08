@@ -1,0 +1,66 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'DropTimer.gg', description = 'Track upcoming game releases and drops' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <!-- Enable View Transitions for smooth page navigation -->
+    <ViewTransitions />
+  </head>
+  <body>
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 bg-dark-surface/80 backdrop-blur-md border-b border-dark-card-hover">
+      <nav class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <a href="/" class="flex items-center gap-2 group" data-astro-prefetch>
+            <h1 class="text-2xl font-heading font-bold gradient-text group-hover:scale-105 transition-transform duration-200">
+              DropTimer<span class="text-neon-cyan">.gg</span>
+            </h1>
+          </a>
+
+          <!-- Navigation Links (for future use) -->
+          <div class="hidden md:flex items-center gap-6">
+            <a
+              href="/"
+              class="text-text-secondary hover:text-neon-cyan transition-colors duration-200 font-medium"
+              data-astro-prefetch
+            >
+              Home
+            </a>
+            <!-- Add more nav items as needed -->
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="min-h-screen">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-dark-card-hover bg-dark-surface/50 py-8 mt-16">
+      <div class="container mx-auto px-4 text-center">
+        <p class="text-text-secondary text-sm">
+          © 2024 DropTimer.gg - Track your favorite game releases
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+

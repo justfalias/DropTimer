@@ -1,0 +1,25 @@
+---
+import type { Platform } from '@/types/Game';
+
+interface Props {
+  platform: Platform;
+}
+
+const { platform } = Astro.props;
+
+// Platform color mapping
+const platformColors: Record<Platform, string> = {
+  Steam: 'bg-platform-steam text-white',
+  PlayStation: 'bg-platform-playstation text-white',
+  Xbox: 'bg-platform-xbox text-white',
+  Switch: 'bg-platform-switch text-white',
+  PC: 'bg-platform-pc text-white',
+};
+---
+
+<span
+  class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${platformColors[platform]} transition-all duration-200 hover:scale-105`}
+>
+  {platform}
+</span>
+
