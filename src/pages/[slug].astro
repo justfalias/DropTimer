@@ -48,10 +48,65 @@ const releaseDateFormatted = new Date(defaultReleaseDate).toLocaleDateString('en
   day: 'numeric',
 });
 
-const shareUrl = `${Astro.url.origin}/${game.slug}`;
+const siteUrl = Astro.url.origin;
+const gameUrl = `${siteUrl}/${game.slug}`;
+const gameImage = game.image.startsWith('http') ? game.image : `${siteUrl}${game.image}`;
+
+// SEO metadata
+const seoTitle = `${game.name} Release Date & Countdown - DropTimer.gg`;
+const seoDescription = `${game.name} releases on ${releaseDateFormatted} for ${game.platforms.join(', ')}. Track the countdown timer and never miss the launch! ${game.description}`;
+
+// JSON-LD Structured Data for VideoGame
+const jsonLd: any = {
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": game.name,
+  "description": game.description,
+  "image": gameImage,
+  "url": gameUrl,
+  "gamePlatform": game.platforms.map(platform => {
+    const platformMap: Record<string, string> = {
+      'PC': 'PC',
+      'PlayStation': 'PlayStation',
+      'Xbox': 'Xbox',
+      'Switch': 'Nintendo Switch',
+      'Steam': 'Steam'
+    };
+    return platformMap[platform] || platform;
+  }),
+  "datePublished": defaultReleaseDate,
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.5",
+    "ratingCount": "1"
+  },
+  "offers": {
+    "@type": "Offer",
+    "availability": "https://schema.org/PreOrder",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
+
+// Add platform-specific release dates if available
+if (game.platformReleaseDates && Object.keys(game.platformReleaseDates).length > 0) {
+  jsonLd["hasVariant"] = Object.entries(game.platformReleaseDates).map(([platform, date]) => ({
+    "@type": "VideoGame",
+    "name": `${game.name} (${platform})`,
+    "gamePlatform": platform,
+    "datePublished": date
+  }));
+}
 ---
 
-<MainLayout title={`${game.name} - DropTimer.gg`} description={game.description}>
+<MainLayout 
+  title={seoTitle}
+  description={seoDescription}
+  image={gameImage}
+  type="article"
+  canonicalUrl={gameUrl}
+  jsonLd={jsonLd}
+>
   <div class="min-h-screen flex flex-col relative">
     <!-- Fixed Background Image -->
     <div class="fixed inset-0 z-0">

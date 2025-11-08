@@ -5,9 +5,25 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  type?: string;
+  canonicalUrl?: string;
+  jsonLd?: object;
 }
 
-const { title = 'DropTimer.gg', description = 'Track upcoming game releases and drops' } = Astro.props;
+const { 
+  title = 'DropTimer.gg - Track Upcoming Game Releases & Countdowns',
+  description = 'Track upcoming video game releases with live countdown timers. Find release dates for PC, PlayStation, Xbox, Switch, and Steam games. Never miss a game launch again!',
+  image = '/favicon.svg',
+  type = 'website',
+  canonicalUrl,
+  jsonLd
+} = Astro.props;
+
+const siteUrl = Astro.url.origin;
+const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
+const canonical = canonicalUrl || Astro.url.pathname;
+const fullCanonicalUrl = canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`;
 
 const platforms = [
   { name: 'PC', color: 'from-blue-600 to-blue-800', bgColor: 'bg-blue-600', icon: 'PC' },
@@ -25,7 +41,35 @@ const platforms = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={fullCanonicalUrl} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={fullCanonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullImageUrl} />
+    <meta property="og:site_name" content="DropTimer.gg" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={fullCanonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageUrl} />
+    
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="DropTimer.gg" />
+    <meta name="theme-color" content="#00f0ff" />
+    
     <title>{title}</title>
+    
+    {/* JSON-LD Structured Data */}
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+    
     <!-- Enable View Transitions for smooth page navigation -->
     <ViewTransitions />
   </head>
