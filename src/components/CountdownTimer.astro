@@ -1,9 +1,10 @@
 ---
 interface Props {
   releaseDate: string;
+  large?: boolean;
 }
 
-const { releaseDate } = Astro.props;
+const { releaseDate, large = false } = Astro.props;
 
 // Calculate time remaining until release
 function getTimeRemaining(targetDate: string) {
@@ -31,52 +32,67 @@ function getTimeRemaining(targetDate: string) {
 }
 
 const timeRemaining = getTimeRemaining(releaseDate);
+
+const sizeClasses = large
+  ? {
+      container: 'gap-6 md:gap-8',
+      number: 'text-5xl md:text-7xl lg:text-8xl',
+      label: 'text-sm md:text-base',
+      separator: 'text-4xl md:text-6xl',
+    }
+  : {
+      container: 'gap-4',
+      number: 'text-2xl',
+      label: 'text-xs',
+      separator: 'text-xl',
+    };
 ---
 
-<div class="countdown-timer" data-release-date={releaseDate}>
+<div class="countdown-timer" data-release-date={releaseDate} data-large={large}>
   {timeRemaining.isExpired ? (
-    <div data-expired class="text-neon-cyan font-mono text-lg font-semibold">Released!</div>
+    <div data-expired class="text-neon-cyan font-mono text-lg md:text-2xl font-semibold">
+      Released!
+    </div>
   ) : (
-    <div data-timer-container class="flex gap-4 items-center">
+    <div data-timer-container class={`flex ${sizeClasses.container} items-center justify-center`}>
       <!-- Days -->
       <div class="flex flex-col items-center">
-        <span data-days class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+        <span data-days class={`font-mono ${sizeClasses.number} font-bold text-neon-cyan tabular-nums`}>
           {String(timeRemaining.days).padStart(2, '0')}
         </span>
-        <span class="text-xs text-text-secondary uppercase tracking-wider">Days</span>
+        <span class={`${sizeClasses.label} text-text-secondary uppercase tracking-wider`}>Days</span>
       </div>
-      <span class="text-neon-cyan font-mono text-xl">:</span>
+      <span class={`text-neon-cyan font-mono ${sizeClasses.separator}`}>:</span>
       <!-- Hours -->
       <div class="flex flex-col items-center">
-        <span data-hours class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+        <span data-hours class={`font-mono ${sizeClasses.number} font-bold text-neon-cyan tabular-nums`}>
           {String(timeRemaining.hours).padStart(2, '0')}
         </span>
-        <span class="text-xs text-text-secondary uppercase tracking-wider">Hours</span>
+        <span class={`${sizeClasses.label} text-text-secondary uppercase tracking-wider`}>Hours</span>
       </div>
-      <span class="text-neon-cyan font-mono text-xl">:</span>
+      <span class={`text-neon-cyan font-mono ${sizeClasses.separator}`}>:</span>
       <!-- Minutes -->
       <div class="flex flex-col items-center">
-        <span data-minutes class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+        <span data-minutes class={`font-mono ${sizeClasses.number} font-bold text-neon-cyan tabular-nums`}>
           {String(timeRemaining.minutes).padStart(2, '0')}
         </span>
-        <span class="text-xs text-text-secondary uppercase tracking-wider">Min</span>
+        <span class={`${sizeClasses.label} text-text-secondary uppercase tracking-wider`}>Min</span>
       </div>
-      <span class="text-neon-cyan font-mono text-xl">:</span>
+      <span class={`text-neon-cyan font-mono ${sizeClasses.separator}`}>:</span>
       <!-- Seconds -->
       <div class="flex flex-col items-center">
-        <span data-seconds class="font-mono text-2xl font-bold text-neon-cyan tabular-nums">
+        <span data-seconds class={`font-mono ${sizeClasses.number} font-bold text-neon-cyan tabular-nums`}>
           {String(timeRemaining.seconds).padStart(2, '0')}
         </span>
-        <span class="text-xs text-text-secondary uppercase tracking-wider">Sec</span>
+        <span class={`${sizeClasses.label} text-text-secondary uppercase tracking-wider`}>Sec</span>
       </div>
     </div>
   )}
 </div>
 
-<script define:vars={{ releaseDate }}>
+<script define:vars={{ releaseDate, large }}>
   // Client-side script to update countdown every second
   if (typeof window !== 'undefined') {
-    // Find all countdown timers on the page
     const timerElements = document.querySelectorAll('.countdown-timer');
     
     timerElements.forEach((element) => {
@@ -91,7 +107,6 @@ const timeRemaining = getTimeRemaining(releaseDate);
       const minutesEl = element.querySelector('[data-minutes]');
       const secondsEl = element.querySelector('[data-seconds]');
 
-      // If already expired on initial load, don't set up timer
       if (expiredEl && expiredEl.offsetParent !== null) {
         return;
       }
@@ -101,7 +116,6 @@ const timeRemaining = getTimeRemaining(releaseDate);
         const difference = targetDate - now;
 
         if (difference <= 0) {
-          // Show expired message and hide timer
           if (expiredEl) {
             expiredEl.style.display = 'block';
           }
@@ -111,7 +125,6 @@ const timeRemaining = getTimeRemaining(releaseDate);
           return;
         }
 
-        // Update timer values
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
@@ -123,10 +136,8 @@ const timeRemaining = getTimeRemaining(releaseDate);
         if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
       }
 
-      // Update immediately and then every second
       updateTimer();
       setInterval(updateTimer, 1000);
     });
   }
 </script>
-
